@@ -395,85 +395,8 @@
   </div><!-- /card-wrap -->
 
 
-  <!-- Firebase + App Logic (type="module") -->
-  <script type="module">
-    import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc }
-                                from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-    // Firebase config
-    const firebaseConfig = {
-      apiKey:            "AIzaSyC4jdAvuZH22Z7KnjtHBTKC8n4X0w4ZCso",
-      authDomain:        "cineforo-espoch-d7506.firebaseapp.com",
-      projectId:         "cineforo-espoch-d7506",
-      storageBucket:     "cineforo-espoch-d7506.firebasestorage.app",
-      messagingSenderId: "809823549810",
-      appId:             "1:809823549810:web:7f0876edf8c22d703245eb"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
-
-    // ── Mostrar / ocultar campos ESPOCH ──────────────
-    const tipoSelect    = document.getElementById('tipoAsistente');
-    const camposEspoch  = document.getElementById('camposEspoch');
-
-    tipoSelect.addEventListener('change', () => {
-      if (tipoSelect.value === 'espoch') {
-        camposEspoch.classList.add('visible');
-      } else {
-        camposEspoch.classList.remove('visible');
-      }
-    });
-
-    // ── Submit ────────────────────────────────────────
-    const formulario = document.getElementById('formAsistencia');
-    formulario.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      // Validación básica
-      const nombres = document.getElementById('nombres').value.trim();
-      const correo  = document.getElementById('correo').value.trim();
-      const ciudad  = document.getElementById('ciudad').value.trim();
-      const tipo    = tipoSelect.value;
-
-      if (!nombres || !correo || !ciudad || !tipo) {
-        alert('Por favor completa todos los campos obligatorios.');
-        return;
-      }
-
-      const btnSubmit = document.getElementById('btnSubmit');
-      btnSubmit.disabled = true;
-      btnSubmit.innerHTML = '<span class="spinner"></span>Registrando…';
-
-      try {
-        await addDoc(collection(db, "asistentes"), {
-          nombre:    nombres,
-          correo:    correo,
-          ciudad:    ciudad,
-          esEspoch:  tipo,
-          facultad:  document.getElementById('facultad')?.value || "",
-          carrera:   document.getElementById('carrera')?.value  || "",
-          fecha:     new Date()
-        });
-
-        document.getElementById('formContainer').innerHTML = `
-          <div class="success-box">
-            <div class="success-icon">✅</div>
-            <h2>¡Registro Exitoso!</h2>
-            <p>Bienvenido/a al<br/>
-               <strong style="color:var(--cream)">Cine Foro Sostenibilidad</strong>.<br/>
-               ¡Disfruta el evento!</p>
-          </div>
-        `;
-      } catch (error) {
-        console.error("Error al registrar:", error);
-        alert("Hubo un error de conexión. Por favor intenta nuevamente.");
-        btnSubmit.disabled = false;
-        btnSubmit.innerHTML = "Registrar Ingreso →";
-      }
-    });
-  </script>
+  <!-- Motor Telemático -->
+  <script type="module" src="app.js"></script>
 
 </body>
 </html>
