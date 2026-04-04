@@ -31,38 +31,83 @@ if (tipoSelect && camposEspoch) {
     });
 }
 
-// ── Registro a Firebase ─────────────────────────────────
+// ── Registro a Firebase & Control de Datos ─────────────────────────────────
 const formulario = document.getElementById('formAsistencia');
-if (formulario) {
+
+// PREVENCIÓN DE DUPLICADOS EN DISPOSITIVO (Anti-Spam Básico)
+if (localStorage.getItem('asistencia_registrada')) {
+    if (formulario) {
+        document.getElementById('formContainer').innerHTML = `
+            <div class="success-box">
+                <div class="success-icon">✅</div>
+                <h2>¡Ya estás registrado!</h2>
+                <p>Tu asistencia ya fue confirmada previamente desde este celular.</p>
+                <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 1rem;">Cine Foro Sostenibilidad · ESPOCH</p>
+            </div>
+        `;
+    }
+}
+
+if (formulario && !localStorage.getItem('asistencia_registrada')) {
     formulario.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Validación básica
+        // 1. Recolección de Datos
         const nombres = document.getElementById('nombres').value.trim();
         const correo  = document.getElementById('correo').value.trim();
         const ciudad  = document.getElementById('ciudad').value.trim();
         const tipo    = document.getElementById('tipoAsistente').value;
+        const facultad = document.getElementById('facultad') ? document.getElementById('facultad').value : "";
+        const carrera = document.getElementById('carrera') ? document.getElementById('carrera').value.trim() : "";
 
-        if (!nombres || !correo || !ciudad || !tipo) {
-            alert('Por favor completa todos los campos obligatorios.');
+        // 2. AUDITORÍA DE DATOS (Filtros de Calidad)
+        const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s\.]+$/;
+        
+        if (!regexLetras.test(nombres) || nombres.length < 5) {
+            alert('❌ Por favor, ingresa un nombre y apellido válido (sin números ni símbolos especiales).');
             return;
         }
 
+        const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!regexCorreo.test(correo)) {
+            alert('❌ Por favor, ingresa un correo electrónico válido.');
+            return;
+        }
+
+        if (!regexLetras.test(ciudad) || ciudad.length < 3) {
+            alert('❌ Por favor, ingresa el nombre de una ciudad válida.');
+            return;
+        }
+
+        // Filtro estricto condicional para ESPOCH
+        if (tipo === 'espoch') {
+            if (!facultad || carrera.length < 3) {
+                alert('❌ Al seleccionar Comunidad ESPOCH, debes elegir tu Facultad e ingresar tu Carrera obligatoriamente.');
+                return;
+            }
+        }
+
+        // 3. UI de Carga y Bloqueo de Botón
         const btnSubmit = document.getElementById('btnSubmit');
         btnSubmit.disabled = true;
         btnSubmit.innerHTML = '<span class="spinner"></span>Registrando…';
 
         try {
+            // 4. Inyección a Firestore con Limpieza/Homogeneización
             await addDoc(collection(db, "asistentes"), {
-                nombre:    nombres,
-                correo:    correo,
-                ciudad:    ciudad.charAt(0).toUpperCase() + ciudad.slice(1).toLowerCase(), // Limpieza de datos
+                nombre:    nombres.replace(/\s+/g, ' '), // Quita dobles espacios
+                correo:    correo.toLowerCase(),
+                ciudad:    ciudad.charAt(0).toUpperCase() + ciudad.slice(1).toLowerCase(), // Capitaliza Riobamba
                 esEspoch:  tipo,
-                facultad:  document.getElementById('facultad')?.value || "",
-                carrera:   document.getElementById('carrera')?.value.trim()  || "",
+                facultad:  tipo === 'espoch' ? facultad : "Externo - Visitante",
+                carrera:   tipo === 'espoch' ? carrera.toUpperCase() : "N/A", // Estandariza carreras
                 fecha:     new Date()
             });
 
+            // 5. Bloquear futuros intentos en este navegador para no ensuciar DB
+            localStorage.setItem('asistencia_registrada', 'true');
+
+            // 6. Mensaje Final
             document.getElementById('formContainer').innerHTML = `
                 <div class="success-box">
                     <div class="success-icon">
@@ -74,8 +119,8 @@ if (formulario) {
             `;
         } catch (error) {
             console.error("Error al registrar:", error);
-            alert("Error de conexión. Intenta de nuevo.");
-            btnSubmit.disabled = false;
+            alert("⚠️ Error de conexión con Firebase. El registro no se completó, inténtalo de nuevo en unos segundos.");
+            btnSubmit.disabled = false; // Solo se desbloquea si hubo fallo
             btnSubmit.innerHTML = "Registrar Ingreso →";
         }
     });
