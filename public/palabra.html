@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nube de Palabras - Cine Foro Sostenibilidad</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: #FDF8F3;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+  <div id="wrapper"
+    class="max-w-md w-full bg-white rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.06)] p-6 md:p-8 border border-gray-100">
+    <div class="text-center mb-6">
+      <h1 class="text-2xl font-bold text-[#1C1C2E] mb-2">Una Palabra</h1>
+      <p class="text-sm text-gray-500">"En una sola palabra, ¿qué te llevas del evento de hoy?".</p>
+    </div>
+
+    <form id="wordForm" class="flex flex-col gap-4">
+      <input type="text" id="keyword" required maxlength="20" placeholder="Ej. Futuro, Vida, Ecología..."
+        class="w-full text-center text-lg px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#4A6FBF] focus:ring-2 focus:ring-[#DBEAFE] transition-all">
+      <button type="submit" id="btnSubmit"
+        class="w-full bg-[#1A9B8A] hover:bg-[#137a6c] text-white font-semibold py-3 rounded-xl transition-all shadow-md mt-2">
+        Enviar al Proyector
+      </button>
+    </form>
+  </div>
+
+  <div id="successMsg" class="hidden text-center max-w-md w-full">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D1FAE5] mb-4">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1A9B8A" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <h2 class="text-2xl font-bold text-[#1C1C2E] mb-2">¡Recibida!</h2>
+    <p class="text-gray-500">Mira al proyector principal para ver cómo la nube toma forma.</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4jdAvuZH22Z7KnjtHBTKC8n4X0w4ZCso",
+      authDomain: "cineforo-espoch-d7506.firebaseapp.com",
+      projectId: "cineforo-espoch-d7506",
+      storageBucket: "cineforo-espoch-d7506.firebasestorage.app",
+      messagingSenderId: "809823549810",
+      appId: "1:809823549810:web:7f0876edf8c22d703245eb"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const blacklist = ['feo', 'tonto', 'prueba', 'test', 'malo', 'pene', 'puto', 'puta', 'mierda', 'culo'];
+
+    function normalizeWord(word) {
+      let normalized = word.trim().toLowerCase();
+      // Quitar acentos/diacríticos
+      normalized = normalized.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return normalized;
+    }
+
+    const wrapper = document.getElementById('wrapper');
+    const successMsg = document.getElementById('successMsg');
+    const form = document.getElementById('wordForm');
+
+    // Anti-spam de carga
+    if (localStorage.getItem('palabra_nube_enviada')) {
+      wrapper.classList.add('hidden');
+      successMsg.classList.remove('hidden');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const inputVal = document.getElementById('keyword').value;
+      const cleanWord = normalizeWord(inputVal);
+
+      if (!cleanWord) return;
+
+      // Auditoría estricta: Solo letras, no números, no símbolos, no espacios
+      const isValid = /^[a-z]+$/i.test(cleanWord);
+      if (!isValid) {
+        alert("❌ Por favor, ingresa una sola palabra válida (sin números, símbolos ni espacios).");
+        return;
+      }
+
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerText = 'Transfiriendo...';
+
+      // Lista Negra: Éxito Falso
+      if (blacklist.includes(cleanWord)) {
+        wrapper.classList.add('hidden');
+        successMsg.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "palabras_clave"), {
+          texto: cleanWord,
+          fecha: new Date()
+        });
+
+        localStorage.setItem('palabra_nube_enviada', 'true');
+        wrapper.classList.add('hidden');
+        successMsg.classList.remove('hidden');
+
+      } catch (err) {
+        console.error("Error guardando palabra:", err);
+        alert("Hubo un error de conexión. Intenta de nuevo.");
+        btn.disabled = false;
+        btn.innerText = 'Enviar al Proyector';
+      }
+    });
+  </script>
+</body>
+
+</html>

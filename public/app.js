@@ -20,15 +20,60 @@ const db = getFirestore(app);
 // ── Mostrar / ocultar campos ESPOCH ──────────────
 const tipoSelect    = document.getElementById('tipoAsistente');
 const camposEspoch  = document.getElementById('camposEspoch');
+const wrapCarrera   = document.getElementById('wrapCarrera');
+const selectFacultad = document.getElementById('facultad');
+const selectCarrera = document.getElementById('carrera');
+
+const diccionarioEspoch = {
+    "Facultad de Recursos Naturales": ["Minas", "Geomática", "Geología Ambiental y de Riesgos", "Agronomía", "Recursos Naturales Renovables", "Turismo", "Ingeniería Forestal"],
+    "Facultad de Informática y Electrónica (FIE)": ["Telemática", "Software", "Tecnologías de la Información", "Electrónica y Automatización", "Electricidad", "Diseño Gráfico"],
+    "Facultad de Ciencias": ["Bioquímica y Farmacia", "Biotecnología", "Química", "Física", "Estadística", "Matemática"],
+    "Facultad de Salud Pública": ["Medicina", "Nutrición y Dietética", "Gastronomía", "Promoción y Cuidados de la Salud"],
+    "Facultad de Mecánica": ["Ingeniería Mecánica", "Ingeniería Industrial", "Ingeniería Automotriz", "Mantenimiento Industrial"],
+    "Facultad de Administración de Empresas (FADE)": ["Administración de Empresas", "Contabilidad y Auditoría", "Comercio Exterior", "Marketing", "Finanzas", "Gestión del Transporte"],
+    "Facultad de Ciencias Pecuarias": ["Zootecnia", "Ingeniería en Industrias Pecuarias"],
+    "Sede Morona Santiago (Macas)": ["Ingeniería Ambiental", "Agronomía", "Zootecnia", "Minas", "Geología", "Computación", "Contabilidad y Auditoría", "Turismo", "Biotecnología"],
+    "Sede Orellana (El Coca)": ["Agronomía", "Zootecnia", "Ingeniería Ambiental", "Tecnologías de la Información", "Turismo", "Gestión del Transporte"]
+};
 
 if (tipoSelect && camposEspoch) {
     tipoSelect.addEventListener('change', () => {
-        if (tipoSelect.value === 'espoch') {
+        const val = tipoSelect.value;
+        if (val === 'espoch' || val === 'docente') {
             camposEspoch.classList.add('visible');
+            
+            // Si es docente, ocultamos el selector de carrera
+            if (val === 'docente') {
+                if (wrapCarrera) wrapCarrera.classList.add('hidden-field');
+                if (selectCarrera) selectCarrera.required = false;
+            } else {
+                if (wrapCarrera) wrapCarrera.classList.remove('hidden-field');
+                if (selectCarrera) selectCarrera.required = true;
+            }
         } else {
             camposEspoch.classList.remove('visible');
         }
     });
+
+    if (selectFacultad && selectCarrera) {
+        selectFacultad.addEventListener('change', () => {
+            const fac = selectFacultad.value;
+            // Reiniciar y poblar el select de carreras
+            selectCarrera.innerHTML = '<option value="" disabled selected>Selecciona tu carrera…</option>';
+            
+            if (diccionarioEspoch[fac]) {
+                diccionarioEspoch[fac].forEach(carrera => {
+                    const opt = document.createElement('option');
+                    opt.value = carrera;
+                    opt.textContent = carrera;
+                    selectCarrera.appendChild(opt);
+                });
+                selectCarrera.disabled = false;
+            } else {
+                selectCarrera.disabled = true;
+            }
+        });
+    }
 }
 
 // ── Registro a Firebase & Control de Datos ─────────────────────────────────
@@ -80,10 +125,16 @@ if (formulario && !localStorage.getItem('asistencia_registrada')) {
         }
 
         // Filtro estricto condicional para ESPOCH
-        if (tipo === 'espoch') {
-            if (!facultad || carrera.length < 3) {
-                alert('❌ Al seleccionar Comunidad ESPOCH, debes elegir tu Facultad e ingresar tu Carrera obligatoriamente.');
+        if (tipo === 'espoch' || tipo === 'docente') {
+            if (!facultad || !diccionarioEspoch[facultad]) {
+                alert('❌ Por favor, selecciona una Facultad o Sede válida de la lista.');
                 return;
+            }
+            if (tipo === 'espoch') {
+                if (!carrera || !diccionarioEspoch[facultad].includes(carrera)) {
+                    alert('❌ Por favor, selecciona una Carrera válida de tu Facultad.');
+                    return;
+                }
             }
         }
 
@@ -99,8 +150,8 @@ if (formulario && !localStorage.getItem('asistencia_registrada')) {
                 correo:    correo.toLowerCase(),
                 ciudad:    ciudad.charAt(0).toUpperCase() + ciudad.slice(1).toLowerCase(), // Capitaliza Riobamba
                 esEspoch:  tipo,
-                facultad:  tipo === 'espoch' ? facultad : "Externo - Visitante",
-                carrera:   tipo === 'espoch' ? carrera.toUpperCase() : "N/A", // Estandariza carreras
+                facultad:  (tipo === 'espoch' || tipo === 'docente') ? facultad : "Externo - Visitante",
+                carrera:   (tipo === 'espoch') ? carrera : "N/A", // Estandariza carreras
                 fecha:     new Date()
             });
 
@@ -335,5 +386,47 @@ if (contadorElement) {
                 lastTime: lastTimeStr
             });
         }
+    }, (error) => {
+        console.error("Dashboard onSnapshot error:", error);
+    });
+}
+
+// =============================================
+// DASHBOARD - Nube de Palabras (WordCloud)
+// =============================================
+const canvasNube = document.getElementById('wordcloud');
+if (canvasNube) {
+    onSnapshot(collection(db, "palabras_clave"), (snapshot) => {
+        const frecuencias = {};
+        
+        snapshot.forEach((doc) => {
+            const palabra = doc.data().texto;
+            if(palabra && palabra.trim() !== '') {
+                frecuencias[palabra] = (frecuencias[palabra] || 0) + 1;
+            }
+        });
+
+        // Formateo para librería wordcloud2.js: [['palabra', tamaño], ['otra', tamaño]]
+        const listaNube = Object.entries(frecuencias).map(([palabra, cuenta]) => {
+            // Factor multiplicador para que se note la proporción en el canvas
+            return [palabra, (cuenta * 14) + 12]; 
+        });
+
+        if (listaNube.length > 0 && typeof window.WordCloud !== 'undefined') {
+            window.WordCloud(canvasNube, { 
+                list: listaNube,
+                gridSize: Math.round(12 * document.getElementById('wordcloud').offsetWidth / 1024),
+                weightFactor: 1,
+                fontFamily: 'Space Grotesk, DM Sans, sans-serif',
+                color: 'random-dark', // Paleta aleatoria de tonos oscuros/visibles
+                backgroundColor: 'transparent',
+                rotateRatio: 0.1, // Solo unas pocas palabras saldrán verticales
+                shrinkToFit: true,
+                drawOutOfBound: false,
+                minSize: 12
+            });
+        }
+    }, (error) => {
+        console.error("WordCloud onSnapshot error:", error);
     });
 }

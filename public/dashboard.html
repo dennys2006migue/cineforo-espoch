@@ -9,6 +9,7 @@
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>
   <style>
     :root {
       --red: #C0392B;
@@ -1142,24 +1143,19 @@
         </div>
       </div>
 
-      <!-- RITMO INTERACTIVO -->
-      <div class="chart-card">
-        <div class="cc-header">
+      <!-- NUBE DE PALABRAS -->
+      <div class="chart-card" style="display:flex; flex-direction:column;">
+        <div class="cc-header" style="margin-bottom:8px;">
           <div class="cc-title">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="2">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
-            Ritmo de llegada
+            Nube de Palabras
           </div>
-          <div class="cc-tag" id="rhythm-mode-btn" style="cursor:pointer;" onclick="toggleRhythm()">por hora ↕</div>
+          <div class="cc-tag" style="background:var(--teal-bg); color:var(--teal);">¡En vivo!</div>
         </div>
-        <div class="rhythm-bars" id="rhythm-bars"></div>
-        <div class="rhythm-labels" id="rhythm-labels"></div>
-        <div style="margin-top:9px;display:flex;align-items:center;gap:7px;">
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--indigo);flex-shrink:0;"></div>
-          <span style="font-size:10px;color:var(--tm);">Pico: <strong id="rhythm-peak-lbl"
-              style="color:var(--tp);">—</strong> · <strong id="rhythm-peak-val"
-              style="color:var(--indigo);">—</strong></span>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; min-height: 180px; position:relative; width:100%;">
+          <canvas id="wordcloud" style="width:100%; height:100%;"></canvas>
         </div>
       </div>
 
@@ -1196,46 +1192,7 @@
 
   <!-- ── RITMO CHART JS ── -->
   <script>
-    // ── Rhythm chart ──────────────────────────────────────────────
-    const hourData = [2, 5, 4, 8, 11, 9, 7, 4, 3, 2, 1, 1];
-    const hourLabels = ['08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'];
-    const minData = [1, 3, 2, 4, 5, 3, 6, 4, 5, 3, 4, 7];
-    const minLabels = ['12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
-    let showHour = true;
-
-    function renderRhythm(data, labels) {
-      const max = Math.max(...data);
-      const peakIdx = data.indexOf(max);
-      const bars = document.getElementById('rhythm-bars');
-      const lbls = document.getElementById('rhythm-labels');
-      bars.innerHTML = '';
-      lbls.innerHTML = '';
-      data.forEach((v, i) => {
-        const pct = Math.round((v / max) * 100);
-        const b = document.createElement('div');
-        b.className = 'rbar';
-        b.style.height = pct + '%';
-        b.style.background = i === peakIdx ? 'var(--red)' : 'var(--indigo)';
-        b.style.opacity = i === peakIdx ? '1' : '0.45';
-        b.setAttribute('data-val', v);
-        b.title = labels[i] + (showHour ? 'h' : 'm') + ': ' + v + ' personas';
-        bars.appendChild(b);
-        const l = document.createElement('div');
-        l.className = 'rlabel';
-        l.textContent = labels[i];
-        lbls.appendChild(l);
-      });
-      document.getElementById('rhythm-peak-lbl').textContent = labels[peakIdx] + (showHour ? ':00' : 'm');
-      document.getElementById('rhythm-peak-val').textContent = max + ' personas';
-    }
-
-    function toggleRhythm() {
-      showHour = !showHour;
-      document.getElementById('rhythm-mode-btn').textContent = showHour ? 'por hora ↕' : 'por min ↕';
-      renderRhythm(showHour ? hourData : minData, showHour ? hourLabels : minLabels);
-    }
-
-    renderRhythm(hourData, hourLabels);
+    // ── WordCloud helpers (se renderiza en app.js) ────────────
 
     // ── Ranking helper (usado si app.js no renderiza el canvas) ───
     // app.js puede llamar window.updateRankingUI(data) para poblar las tarjetas

@@ -192,6 +192,10 @@
       color: var(--green-light); pointer-events: none; font-size: .85rem;
     }
 
+    .hidden-field {
+      display: none !important;
+    }
+
     /* ── Conditional fields ──────────────────── */
     #camposEspoch {
       overflow: hidden;
@@ -201,7 +205,7 @@
       margin-top: 0;
     }
     #camposEspoch.visible {
-      max-height: 200px;
+      max-height: 250px;
       opacity: 1;
       margin-top: 1.25rem;
     }
@@ -354,33 +358,42 @@
               <select id="tipoAsistente" name="tipoAsistente" required>
                 <option value="" disabled selected>Selecciona una opción…</option>
                 <option value="espoch">Universitario ESPOCH</option>
-                <option value="externo">Público externo</option>
+                <option value="docente">Docente ESPOCH</option>
+                <option value="externo">Público externo / Invitado</option>
               </select>
             </div>
           </div>
 
-          <!-- Campos solo para ESPOCH -->
+          <!-- Campos solo para ESPOCH y DOCENTES -->
           <div id="camposEspoch">
             <div class="form-group">
-              <label for="facultad">Facultad</label>
+              <label for="facultad">Facultad / Sede</label>
               <div class="select-wrap">
                 <select id="facultad" name="facultad">
-                  <option value="" disabled selected>Selecciona tu facultad…</option>
-                  <option>Facultad de Ciencias</option>
-                  <option>Facultad de Informática y Electrónica</option>
-                  <option>Facultad de Mecánica</option>
-                  <option>Facultad de Administración de Empresas</option>
-                  <option>Facultad de Salud Pública</option>
-                  <option>Facultad de Recursos Naturales</option>
-                  <option>Facultad de Pecuaria</option>
-                  <option>Otra</option>
+                  <option value="" disabled selected>Selecciona tu facultad o sede…</option>
+                  <optgroup label="Sede Matriz - Riobamba">
+                    <option value="Facultad de Recursos Naturales">Facultad de Recursos Naturales</option>
+                    <option value="Facultad de Informática y Electrónica (FIE)">Facultad de Informática y Electrónica (FIE)</option>
+                    <option value="Facultad de Ciencias">Facultad de Ciencias</option>
+                    <option value="Facultad de Salud Pública">Facultad de Salud Pública</option>
+                    <option value="Facultad de Mecánica">Facultad de Mecánica</option>
+                    <option value="Facultad de Administración de Empresas (FADE)">Facultad de Administración de Empresas (FADE)</option>
+                    <option value="Facultad de Ciencias Pecuarias">Facultad de Ciencias Pecuarias</option>
+                  </optgroup>
+                  <optgroup label="Sedes Regionales">
+                    <option value="Sede Morona Santiago (Macas)">Sede Morona Santiago (Macas)</option>
+                    <option value="Sede Orellana (El Coca)">Sede Orellana (El Coca)</option>
+                  </optgroup>
                 </select>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="wrapCarrera">
               <label for="carrera">Carrera</label>
-              <input type="text" id="carrera" name="carrera"
-                     placeholder="Ej. Ingeniería en Software"/>
+              <div class="select-wrap">
+                <select id="carrera" name="carrera" disabled>
+                  <option value="" disabled selected>Primero selecciona una facultad…</option>
+                </select>
+              </div>
             </div>
           </div>
 
