@@ -25,15 +25,14 @@ const selectFacultad = document.getElementById('facultad');
 const selectCarrera = document.getElementById('carrera');
 
 const diccionarioEspoch = {
-    "Facultad de Recursos Naturales": ["Minas", "Geomática", "Geología Ambiental y de Riesgos", "Agronomía", "Recursos Naturales Renovables", "Turismo", "Ingeniería Forestal"],
-    "Facultad de Informática y Electrónica (FIE)": ["Telemática", "Software", "Tecnologías de la Información", "Electrónica y Automatización", "Electricidad", "Diseño Gráfico"],
-    "Facultad de Ciencias": ["Bioquímica y Farmacia", "Biotecnología", "Química", "Física", "Estadística", "Matemática"],
-    "Facultad de Salud Pública": ["Medicina", "Nutrición y Dietética", "Gastronomía", "Promoción y Cuidados de la Salud"],
+    "Facultad de Administración de Empresas (FADE)": ["Administración de Empresas", "Contabilidad y Auditoría", "Marketing", "Finanzas", "Gestión del Transporte", "Economía y Comercio", "Derecho", "Gestión de la Inteligencia de los Negocios"],
+    "Facultad de Ciencias": ["Bioquímica y Farmacia", "Química", "Física", "Estadística", "Matemática", "Ingeniería Química", "Ingeniería Ambiental"],
+    "Facultad de Ciencias Pecuarias": ["Zootecnia", "Agroindustria", "Veterinaria"],
+    "Facultad de Informática y Electrónica (FIE)": ["Software", "Tecnologías de la Información", "Electrónica y Automatización", "Telecomunicaciones", "Electricidad", "Telemática", "Diseño Gráfico"],
     "Facultad de Mecánica": ["Ingeniería Mecánica", "Ingeniería Industrial", "Ingeniería Automotriz", "Mantenimiento Industrial"],
-    "Facultad de Administración de Empresas (FADE)": ["Administración de Empresas", "Contabilidad y Auditoría", "Comercio Exterior", "Marketing", "Finanzas", "Gestión del Transporte"],
-    "Facultad de Ciencias Pecuarias": ["Zootecnia", "Ingeniería en Industrias Pecuarias"],
-    "Sede Morona Santiago (Macas)": ["Ingeniería Ambiental", "Agronomía", "Zootecnia", "Minas", "Geología", "Computación", "Contabilidad y Auditoría", "Turismo", "Biotecnología"],
-    "Sede Orellana (El Coca)": ["Agronomía", "Zootecnia", "Ingeniería Ambiental", "Tecnologías de la Información", "Turismo", "Gestión del Transporte"]
+    "Facultad de Recursos Naturales": ["Minas", "Geomática", "Geología Ambiental y de Riesgos", "Agronomía", "Recursos Naturales Renovables", "Turismo", "Forestal"],
+    "Facultad de Salud Pública": ["Medicina", "Nutrición y Dietética", "Gastronomía", "Promoción y Cuidados de la Salud"],
+    "Sedes (Morona y Orellana)": ["Contabilidad y Auditoría", "Tecnologías de la Información", "Ingeniería Ambiental", "Zootecnia", "Minas"]
 };
 
 if (tipoSelect && camposEspoch) {
