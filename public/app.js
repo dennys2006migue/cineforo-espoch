@@ -412,10 +412,19 @@ if (canvasNube) {
         });
 
         if (listaNube.length > 0 && typeof window.WordCloud !== 'undefined') {
+            // Forzar seteo de dimensiones nativas para que la librería no dibuje invisible o minúsculo
+            const dpr = window.devicePixelRatio || 1;
+            const pw = canvasNube.parentElement.clientWidth || 600;
+            const ph = canvasNube.parentElement.clientHeight || 200;
+            canvasNube.width = pw * dpr;
+            canvasNube.height = ph * dpr;
+            canvasNube.style.width = pw + "px";
+            canvasNube.style.height = ph + "px";
+            
             window.WordCloud(canvasNube, { 
                 list: listaNube,
-                gridSize: Math.round(12 * document.getElementById('wordcloud').offsetWidth / 1024),
-                weightFactor: 1,
+                gridSize: Math.round(16 * pw / 1024),
+                weightFactor: 1.5, // Hacer las palabras un poco más grandes
                 fontFamily: 'Space Grotesk, DM Sans, sans-serif',
                 color: 'random-dark', // Paleta aleatoria de tonos oscuros/visibles
                 backgroundColor: 'transparent',
