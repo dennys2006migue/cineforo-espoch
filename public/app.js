@@ -177,7 +177,7 @@ if (formulario && !localStorage.getItem('asistencia_registrada')) {
 }
 
 // =============================================
-// VISTA PROYECTOR (dashboard.html) - Graficos
+// VISTA PROYECTOR (dashboard viejito) - Graficos
 // =============================================
 const contadorElement = document.getElementById('contadorTotal');
 if (contadorElement) {
@@ -391,50 +391,42 @@ if (contadorElement) {
 }
 
 // =============================================
-// DASHBOARD - Nube de Palabras (WordCloud)
+// DASHBOARD HORIZONTAL - Nube de Palabras (Integración)
 // =============================================
-const canvasNube = document.getElementById('wordcloud');
-if (canvasNube) {
-    onSnapshot(collection(db, "palabras_clave"), (snapshot) => {
-        const frecuencias = {};
-        
-        snapshot.forEach((doc) => {
-            const palabra = doc.data().texto;
-            if(palabra && palabra.trim() !== '') {
-                frecuencias[palabra] = (frecuencias[palabra] || 0) + 1;
+onSnapshot(collection(db, "palabras_clave"), (snapshot) => {
+    const mapaFrecuencias = {};
+    let palabraNueva = null;
+
+    // Detectar la última palabra ingresada (para animarla en el Feed)
+    snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+            const data = change.doc.data();
+            if (data && data.texto) {
+                // Formateo a mayúsculas para la estética visual
+                palabraNueva = data.texto.trim().toUpperCase();
             }
-        });
-
-        // Formateo para librería wordcloud2.js: [['palabra', tamaño], ['otra', tamaño]]
-        const listaNube = Object.entries(frecuencias).map(([palabra, cuenta]) => {
-            // Factor multiplicador para que se note la proporción en el canvas
-            return [palabra, (cuenta * 14) + 12]; 
-        });
-
-        if (listaNube.length > 0 && typeof window.WordCloud !== 'undefined') {
-            // Forzar seteo de dimensiones nativas para que la librería no dibuje invisible o minúsculo
-            const dpr = window.devicePixelRatio || 1;
-            const pw = canvasNube.parentElement.clientWidth || 600;
-            const ph = canvasNube.parentElement.clientHeight || 200;
-            canvasNube.width = pw * dpr;
-            canvasNube.height = ph * dpr;
-            canvasNube.style.width = pw + "px";
-            canvasNube.style.height = ph + "px";
-            
-            window.WordCloud(canvasNube, { 
-                list: listaNube,
-                gridSize: Math.round(16 * pw / 1024),
-                weightFactor: 1.5, // Hacer las palabras un poco más grandes
-                fontFamily: 'Space Grotesk, DM Sans, sans-serif',
-                color: 'random-dark', // Paleta aleatoria de tonos oscuros/visibles
-                backgroundColor: 'transparent',
-                rotateRatio: 0.1, // Solo unas pocas palabras saldrán verticales
-                shrinkToFit: true,
-                drawOutOfBound: false,
-                minSize: 12
-            });
         }
-    }, (error) => {
-        console.error("WordCloud onSnapshot error:", error);
     });
-}
+
+    // Contar todas las palabras históricas para la Nube
+    snapshot.forEach((doc) => {
+        const palabra = doc.data().texto;
+        if(palabra && palabra.trim() !== '') {
+            const palUpper = palabra.trim().toUpperCase();
+            mapaFrecuencias[palUpper] = (mapaFrecuencias[palUpper] || 0) + 1;
+        }
+    });
+
+    // Enviar datos consolidados a la lógica del dashboard.html
+    if (typeof window.loadWordcloudData === 'function') {
+        window.loadWordcloudData(mapaFrecuencias);
+    }
+    
+    // Enviar la palabra más reciente al Feed visual
+    if (palabraNueva && typeof window.addWordcloudEntry === 'function') {
+        window.addWordcloudEntry(palabraNueva);
+    }
+
+}, (error) => {
+    console.error("WordCloud onSnapshot error:", error);
+});

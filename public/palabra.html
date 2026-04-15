@@ -1,135 +1,349 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nube de Palabras - Cine Foro Sostenibilidad</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500&display=swap"
-    rel="stylesheet" />
+  <title>Palabra Clave | Cine Foro ESPOCH</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
+    /* Paleta Neutra y Acentuada (Azul -> Verde de la invitación) */
+    :root {
+      --primary-blue: #1A3C6E; /* Azul institucional */
+      --accent-blue: #4A6FBF; /* Azul tecnológico */
+      --accent-green: #34D399; /* Verde sostenibilidad */
+      --text-main: #1c2b22; /* Texto oscuro */
+      --text-sub: #3d5a47; /* Texto secundario */
+      --cream: #f8f4ec; /* Fondo neutro */
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
+      min-height: 100vh;
+      background-color: var(--cream);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
       font-family: 'DM Sans', sans-serif;
-      background-color: #FDF8F3;
+      color: var(--text-main);
+      overflow: hidden;
+    }
+
+    /* Ondas de agua sutiles de la invitación (Decoración de fondo) */
+    .bg-decoration {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(26,60,110,.05) 0%, transparent 70%),
+                  url("data:image/svg+xml,%3Csvg width='100' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 Q 25 0, 50 10 T 100 10' stroke='rgba(26,60,110,.03)' fill='none'/%3E%3C/svg%3E");
+      opacity: 0.5;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.4); 
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 28px;
+      padding: 2.5rem 2rem 3rem 2rem;
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+      box-shadow: 0 32px 64px rgba(26,60,110,0.1), inset 0 1px 0 rgba(255,255,255,0.4);
+      animation: slideUp 0.6s ease-out forwards;
+    }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cabecera con Logos */
+    .header-logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(26,60,110,0.1);
+    }
+    
+    /* Etiqueta estética para CINE FORO */
+    .badge {
+      display: inline-block;
+      background: rgba(52, 211, 153, 0.1);
+      color: var(--accent-green);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(52, 211, 153, 0.2);
     }
 
     h1 {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      line-height: 1.3;
+      color: var(--primary-blue);
+      margin-bottom: 0.5rem;
     }
+
+    p.subtitle {
+      font-size: 0.92rem;
+      color: var(--text-sub);
+      margin-bottom: 2rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.4);
+      border: 2px solid rgba(26,60,110,0.1);
+      border-radius: 12px;
+      padding: 1.2rem 1rem;
+      font-size: 1.5rem;
+      color: var(--primary-blue);
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent-blue);
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 15px rgba(74, 111, 191, 0.15);
+    }
+    input[type="text"]::placeholder {
+      color: rgba(26, 60, 110, 0.3);
+      font-weight: 400;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+    }
+
+    .warning-msg {
+      font-size: 0.8rem;
+      color: #d97706; /* Naranja precaución */
+      margin-top: -1rem;
+      margin-bottom: 1rem;
+      min-height: 1.2rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-weight: 500;
+    }
+
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-green) 100%);
+      color: white;
+      border: none;
+      padding: 1.2rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(74, 111, 191, 0.3);
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Estado de Éxito */
+    .success-state { display: none; text-align: center; }
+    .success-state h2 { color: var(--accent-green); font-size: 2rem; margin-bottom: 1rem;}
+    
+    .spinner {
+      width: 20px; height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
   </style>
 </head>
+<body>
 
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+  <div class="bg-decoration"></div>
 
-  <div id="wrapper"
-    class="max-w-md w-full bg-white rounded-2xl shadow-[0_12px_32px_rgba(0,0,0,0.06)] p-6 md:p-8 border border-gray-100">
-    <div class="text-center mb-6">
-      <h1 class="text-2xl font-bold text-[#1C1C2E] mb-2">Una Palabra</h1>
-      <p class="text-sm text-gray-500">"En una sola palabra, ¿qué te llevas del evento de hoy?".</p>
-    </div>
+  <div class="card" id="mainCard">
+    
+    <div id="formSection">
+      
+  <div class="header-logos">
+        <svg viewBox="0 0 175 60" height="55" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="grad27" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#4A6FBF"/>
+              <stop offset="100%" stop-color="#1A3C6E"/>
+            </linearGradient>
+          </defs>
+          <text x="0" y="48" font-family="Arial Black, Impact, sans-serif" font-size="52" font-weight="900" fill="url(#grad27)" font-style="italic" letter-spacing="-3">27</text>
+          <text x="68" y="28" font-family="'Playfair Display', serif" font-size="24" font-style="italic" font-weight="700" fill="#1A3C6E">Años</text>
+          <text x="70" y="44" font-family="'DM Sans', sans-serif" font-size="7.5" font-weight="700" fill="#4A6FBF" letter-spacing="1">XXVII ANIVERSARIO</text>
+        </svg>
+      </div>
 
-    <form id="wordForm" class="flex flex-col gap-4">
-      <input type="text" id="keyword" required maxlength="20" placeholder="Ej. Futuro, Vida, Ecología..."
-        class="w-full text-center text-lg px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#4A6FBF] focus:ring-2 focus:ring-[#DBEAFE] transition-all">
-      <button type="submit" id="btnSubmit"
-        class="w-full bg-[#1A9B8A] hover:bg-[#137a6c] text-white font-semibold py-3 rounded-xl transition-all shadow-md mt-2">
-        Enviar al Proyector
+      <div class="badge">CINE FORO 🌍</div> 
+
+      <h1>En una palabra, "¿qué te llevas del evento de hoy?"</h1>
+      <p class="subtitle">Ej: Equilibrio, Futuro, Conciencia, Vida</p>
+
+      <div class="input-wrapper">
+        <input type="text" id="palabraInput" placeholder="Escribe aquí tu palabra" autocomplete="off" maxlength="20">
+      </div>
+      <div id="warningMsg" class="warning-msg"></div>
+
+      <button id="btnEnviar">
+        <span id="btnText">Enviar</span>
+        <div class="spinner" id="btnSpinner"></div>
       </button>
-    </form>
-  </div>
-
-  <div id="successMsg" class="hidden text-center max-w-md w-full">
-    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#D1FAE5] mb-4">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1A9B8A" stroke-width="2.5"
-        stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
     </div>
-    <h2 class="text-2xl font-bold text-[#1C1C2E] mb-2">¡Recibida!</h2>
-    <p class="text-gray-500">Mira al proyector principal para ver cómo la nube toma forma.</p>
+
+    <div id="successSection" class="success-state">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">🌱</div>
+      <h2>¡Recibido!</h2>
+      <p class="subtitle">Mira la pantalla para ver cómo tu palabra hace crecer la nube.</p>
+    </div>
+
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+    // 🔴 REEMPLAZA CON TU CONFIGURACIÓN DE FIREBASE 🔴
     const firebaseConfig = {
-      apiKey: "AIzaSyC4jdAvuZH22Z7KnjtHBTKC8n4X0w4ZCso",
-      authDomain: "cineforo-espoch-d7506.firebaseapp.com",
-      projectId: "cineforo-espoch-d7506",
-      storageBucket: "cineforo-espoch-d7506.firebasestorage.app",
+      apiKey:            "AIzaSyC4jdAvuZH22Z7KnjtHBTKC8n4X0w4ZCso",
+      authDomain:        "cineforo-espoch-d7506.firebaseapp.com",
+      projectId:         "cineforo-espoch-d7506",
+      storageBucket:     "cineforo-espoch-d7506.firebasestorage.app",
       messagingSenderId: "809823549810",
-      appId: "1:809823549810:web:7f0876edf8c22d703245eb"
+      appId:             "1:809823549810:web:7f0876edf8c22d703245eb"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const blacklist = ['feo', 'tonto', 'prueba', 'test', 'malo', 'pene', 'puto', 'puta', 'mierda', 'culo'];
+    // --- LÓGICA DE MODERACIÓN Y CONTROL ---
 
-    function normalizeWord(word) {
-      let normalized = word.trim().toLowerCase();
-      // Quitar acentos/diacríticos
-      normalized = normalized.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      return normalized;
+    // 1. CONTROL DE SPAM (LocalStorage)
+    if (localStorage.getItem('espoch_cineforo_participacion')) {
+      mostrarExito();
     }
 
-    const wrapper = document.getElementById('wrapper');
-    const successMsg = document.getElementById('successMsg');
-    const form = document.getElementById('wordForm');
+    // 2. DICCIONARIOS DE CONTROL
+    const listaNegra = [
+      "tonto", "idiota", "estupido", "imbecil", "pendejo", "huevon", "cojudo", 
+      "polla", "rosamelano", "hijueputa", "kabron", "cabron", "mmvrga", "vrg", 
+      "comevrg", "gil", "bruto", "pene", "verga", "culo", "mierda", "puta", "puto", 
+      "perra", "mmvrg", "hp", "hpta", "deboratesta", "sexo", "porno", "onlyfans", 
+      "anito", "ano", "pinga", "prepusio", "elvergalarga", "benitocanmela", 
+      "aquilescastro", "lalolanda", "xd", "xdd", "jajaja", "jaja", "jeje", "hola", 
+      "hi", "ok", "yes", "asdf", "qwerty", "123", "abc", "palabra", "texto", "prueba", "test"
+    ];
 
-    // Anti-spam de carga
-    if (localStorage.getItem('palabra_nube_enviada')) {
-      wrapper.classList.add('hidden');
-      successMsg.classList.remove('hidden');
+    const palabrasFueraContexto = [
+      "correa", "lasso", "noboa", "izquierda", "derecha", "socialismo", "capitalismo", 
+      "messi", "cr7", "badbunny", "tiktok", "netflix", "juan", "maria", "pedro", 
+      "carro", "celular", "comida", "perro", "fiesta", "alcohol"
+    ];
+
+    // 3. FUNCIÓN NORMALIZADORA INTELIGENTE (Anti-Trampas)
+    function normalizarPalabra(palabra) {
+      return palabra.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+        .replace(/@/g, "a")
+        .replace(/3/g, "e")
+        .replace(/1/g, "i")
+        .replace(/0/g, "o")
+        .replace(/\$/g, "s")
+        .replace(/4/g, "a")
+        .replace(/7/g, "t")
+        .replace(/[\W_]+/g,""); 
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    // --- INTERACCIÓN DE USUARIO ---
+    const input = document.getElementById('palabraInput');
+    const btn = document.getElementById('btnEnviar');
+    const warning = document.getElementById('warningMsg');
 
-      const inputVal = document.getElementById('keyword').value;
-      const cleanWord = normalizeWord(inputVal);
-
-      if (!cleanWord) return;
-
-      // Auditoría estricta: Solo letras, no números, no símbolos, no espacios
-      const isValid = /^[a-z]+$/i.test(cleanWord);
-      if (!isValid) {
-        alert("❌ Por favor, ingresa una sola palabra válida (sin números, símbolos ni espacios).");
-        return;
+    input.addEventListener('input', (e) => {
+      // Bloquear espacios en tiempo real
+      if (/\s/.test(e.target.value)) {
+        input.value = e.target.value.replace(/\s/g, '');
       }
 
-      const btn = document.getElementById('btnSubmit');
-      btn.disabled = true;
-      btn.innerText = 'Transfiriendo...';
-
-      // Lista Negra: Éxito Falso
-      if (blacklist.includes(cleanWord)) {
-        wrapper.classList.add('hidden');
-        successMsg.classList.remove('hidden');
-        return;
-      }
-
-      try {
-        await addDoc(collection(db, "palabras_clave"), {
-          texto: cleanWord,
-          fecha: new Date()
-        });
-
-        localStorage.setItem('palabra_nube_enviada', 'true');
-        wrapper.classList.add('hidden');
-        successMsg.classList.remove('hidden');
-
-      } catch (err) {
-        console.error("Error guardando palabra:", err);
-        alert("Hubo un error de conexión. Intenta de nuevo.");
-        btn.disabled = false;
-        btn.innerText = 'Enviar al Proyector';
+      const valorLimpio = normalizarPalabra(e.target.value);
+      const esFueraContexto = palabrasFueraContexto.some(p => valorLimpio.includes(p));
+      
+      if(esFueraContexto) {
+        warning.innerText = "⚠️ Intenta usar conceptos relacionados con sostenibilidad";
+        warning.style.opacity = 1;
+      } else {
+        warning.style.opacity = 0;
       }
     });
+
+    btn.addEventListener('click', async () => {
+      let rawText = input.value.trim();
+      
+      if (!rawText || rawText.split(' ').length > 1) {
+          alert("Por favor, ingresa solo una palabra.");
+          return;
+      }
+
+      btn.disabled = true;
+      document.getElementById('btnText').style.display = 'none';
+      document.getElementById('btnSpinner').style.display = 'block';
+
+      const palabraNormalizada = normalizarPalabra(rawText);
+      const contieneInsulto = listaNegra.some(insulto => palabraNormalizada.includes(insulto));
+
+      try {
+        if (!contieneInsulto) {
+          await addDoc(collection(db, "palabras_clave"), {
+            texto: palabraNormalizada, 
+            fecha: serverTimestamp() 
+          });
+        } else {
+            await new Promise(r => setTimeout(r, 600)); 
+        }
+
+        localStorage.setItem('espoch_cineforo_participacion', 'registrado');
+        mostrarExito();
+
+      } catch (error) {
+        console.error("Error al registrar palabra:", error);
+        alert("Hubo un error de conexión. Por favor intenta nuevamente.");
+        btn.disabled = false;
+        document.getElementById('btnText').style.display = 'block';
+        document.getElementById('btnSpinner').style.display = 'none';
+      }
+    });
+
+    function mostrarExito() {
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('successSection').style.display = 'block';
+    }
+
   </script>
 </body>
-
 </html>

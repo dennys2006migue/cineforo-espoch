@@ -1,1266 +1,439 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard en Vivo - Cine Foro Sostenibilidad</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
-    rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <title>CineForo 2026 - Nube de Palabras</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     :root {
-      --red: #C0392B;
-      --red-dark: #9B2D22;
-      --red-light: #FDECEA;
-      --dark: #1a1a2e;
-      --cream: #FDF8F3;
-      --gold: #F4B942;
-      --gold-bg: #FEF3C7;
-      --teal: #1A9B8A;
-      --teal-bg: #D1FAE5;
-      --indigo: #4A6FBF;
-      --indigo-bg: #DBEAFE;
-      --tp: #1C1C2E;
-      --tm: #6B7280;
-      --surf: #FFFFFF;
-      --surf2: #F8F5F0;
-      --bdr: rgba(0, 0, 0, 0.08);
-
-      /* legacy compat for app.js chart colors */
-      --green-500: #22c55e;
-      --green-600: #16a34a;
-      --gray-50: #f9fafb;
-      --gray-200: #e5e7eb;
-      --gray-300: #d1d5db;
-      --gray-400: #9ca3af;
-      --gray-500: #6b7280;
-      --gray-700: #374151;
-      --gray-800: #1f2937;
-      --white: #ffffff;
+      --red: #C0392B; --dark: #2a3a1e; --cream: #f5f0e0;
+      --gold: #F4B942; --teal: #1A9B8A; --purple: #6B5FCF;
+      --bdr: rgba(0,0,0,0.1);
+      --border-thick: #2a2a1a;
     }
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    body { 
+      font-family: 'Segoe UI', sans-serif; 
+      background: var(--dark); 
+      height: 100vh; /* Ocupa exactamente la pantalla */
+      overflow: hidden; /* PROHIBIDO ESCROLEAR EN PROYECTOR */
+      display: flex;
+      flex-direction: column;
     }
 
-    body {
-      min-height: 100vh;
-      background: var(--cream);
-      font-family: 'DM Sans', sans-serif;
-      color: var(--tp);
-    }
-
-    /* ── TOPBAR ─────────────────────────────── */
+    /* =========================================
+       TOPBAR CON LOGO ANIMADO
+       ========================================= */
     .topbar {
-      background: var(--red);
-      padding: 10px 24px;
+      background: var(--dark);
+      padding: 12px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 12px rgba(192, 57, 43, .35);
-    }
-
-    .topbar-brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .alpaca-badge {
-      width: 38px;
-      height: 38px;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-bottom: 3px solid var(--gold);
       flex-shrink: 0;
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
     }
-
-    .topbar-text strong {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: white;
-      display: block;
-      letter-spacing: .3px;
-    }
-
-    .topbar-text span {
-      font-size: 11px;
-      color: rgba(255, 255, 255, .7);
-    }
-
-    .live-pill {
+    
+    /* Logo 27 Años FIE a la izquierda */
+    .logo-container {
       display: flex;
       align-items: center;
-      gap: 7px;
-      background: rgba(255, 255, 255, .15);
-      border: 1px solid rgba(255, 255, 255, .3);
+      gap: 15px;
+    }
+    .logo-text-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .logo-text-group strong {
+      font-size: 16px; font-weight: 700; color: white;
+      letter-spacing: 1.5px;
+    }
+    .logo-text-group span {
+      font-size: 11px; color: rgba(255,255,255,.65); letter-spacing: 1px;
+    }
+    
+    /* Indicador EN VIVO Animado a la derecha */
+    .live-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--red); border-radius: 20px;
+      padding: 8px 20px; color: white; font-size: 13px;
+      font-weight: 800; letter-spacing: 1px;
+      box-shadow: 2px 2px 0 var(--border-thick);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Efecto de latido en toda la pastilla roja */
+    .live-pill::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
       border-radius: 20px;
-      padding: 5px 14px;
-      color: white;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .8px;
+      box-shadow: 0 0 15px rgba(192, 57, 43, 0.8);
+      animation: pill-pulse 1.5s ease-in-out infinite;
+      z-index: 0;
+    }
+    
+    .live-pill span {
+      position: relative; z-index: 1; /* Para que el texto quede sobre la animación */
     }
 
     .live-dot {
-      width: 7px;
-      height: 7px;
-      background: #4ADE80;
-      border-radius: 50%;
-      animation: pulse-live 1.5s ease-in-out infinite;
-      box-shadow: 0 0 0 0 rgba(74, 222, 128, .5);
+      width: 10px; height: 10px; background: #4ADE80; border-radius: 50%;
+      position: relative; z-index: 1;
+      animation: dot-pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pill-pulse {
+      0%, 100% { opacity: 0; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+    
+    @keyframes dot-pulse {
+      0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74,222,128,.6); }
+      50% { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(74,222,128,0); }
     }
 
-    @keyframes pulse-live {
-
-      0%,
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(74, 222, 128, .5);
-      }
-
-      50% {
-        transform: scale(1.15);
-        box-shadow: 0 0 0 7px rgba(74, 222, 128, 0);
-      }
-    }
-
-    /* ── HERO ───────────────────────────────── */
-    .hero {
-      background: white;
-      border-bottom: 1px solid var(--bdr);
-      padding: 20px 24px 16px;
-    }
-
-    .hero-sub {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      color: var(--red);
-      text-transform: uppercase;
-      margin-bottom: 3px;
-    }
-
-    .hero-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 26px;
-      font-weight: 700;
-      line-height: 1.1;
-      color: var(--tp);
-    }
-
-    .hero-title span {
-      color: var(--red);
-    }
-
-    /* ── JOURNEY BAR ────────────────────────── */
-    .journey {
-      background: var(--dark);
-      padding: 13px 24px;
-      display: flex;
-      align-items: center;
-      gap: 0;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .journey::-webkit-scrollbar {
-      display: none;
-    }
-
-    .journey-step {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      flex-shrink: 0;
-    }
-
-    .j-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .j-label {
-      font-size: 11px;
-      color: rgba(255, 255, 255, .65);
-      white-space: nowrap;
-    }
-
-    .j-label strong {
-      display: block;
-      color: white;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .j-arrow {
-      flex-shrink: 0;
-      margin: 0 12px;
-      position: relative;
-      width: 40px;
-      height: 2px;
-      background: rgba(255, 255, 255, .12);
-      overflow: visible;
-    }
-
-    .j-arrow::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--gold);
-      transform: translateY(-50%);
-      animation: flow 1.8s ease-in-out infinite;
-      border-radius: 2px;
-    }
-
-    @keyframes flow {
-      0% {
-        width: 0;
-        left: 0;
-        opacity: 1;
-      }
-
-      50% {
-        width: 100%;
-        left: 0;
-        opacity: 1;
-      }
-
-      100% {
-        width: 0;
-        left: 100%;
-        opacity: 0;
-      }
-    }
-
-    .j-arrowhead {
-      position: absolute;
-      right: -4px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 0;
-      height: 0;
-      border-top: 4px solid transparent;
-      border-bottom: 4px solid transparent;
-      border-left: 6px solid rgba(255, 255, 255, .25);
-    }
-
-    /* ── MAIN WRAPPER ───────────────────────── */
-    .main {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 20px 24px 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* ── 4-CARD STAT ROW ────────────────────── */
-    .cards-row {
+    /* =========================================
+       LAYOUT PRINCIPAL HORIZONTAL (GRID)
+       ========================================= */
+    .board-container {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+      grid-template-columns: 380px 1fr; /* Columna izq fija, columna der toma el resto */
+      gap: 24px;
+      padding: 24px 32px;
+      flex-grow: 1;
+      min-height: 0; /* Permite que los hijos calculen bien su altura */
     }
 
-    @media (max-width: 900px) {
-      .cards-row {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 540px) {
-      .cards-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .stat-card {
-      border-radius: 18px;
-      padding: 20px 18px 18px;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform .2s, box-shadow .2s;
-      min-height: 140px;
+    /* =========================================
+       PANEL IZQUIERDO (Info, Stats y Feed)
+       ========================================= */
+    .panel-left {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: 20px;
+      height: 100%;
     }
 
-    .stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, .15);
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: -30px;
-      right: -30px;
-      width: 110px;
-      height: 110px;
-      background: rgba(255, 255, 255, .08);
-      border-radius: 50%;
-    }
-
-    .stat-card::after {
-      content: '';
-      position: absolute;
-      bottom: -20px;
-      left: -20px;
-      width: 75px;
-      height: 75px;
-      background: rgba(255, 255, 255, .05);
-      border-radius: 50%;
-    }
-
-    .sc-top {
+    /* Burbuja de Pregunta (Comic Style) */
+    .speech-bubble {
+      background: var(--cream);
+      border-radius: 18px;
+      border: 3px solid var(--border-thick);
+      padding: 24px;
       position: relative;
+      box-shadow: 5px 5px 0 var(--border-thick);
+    }
+    .speech-bubble::after {
+      content: ''; position: absolute; bottom: -18px; left: 40px;
+      border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 18px solid var(--border-thick);
+    }
+    .speech-bubble::before {
+      content: ''; position: absolute; bottom: -13px; left: 42px;
+      border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 15px solid var(--cream);
       z-index: 1;
     }
-
-    .sc-label {
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-weight: 600;
-      opacity: .75;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .q-label {
+      font-size: 11px; font-weight: 800; letter-spacing: 2px;
+      color: var(--purple); text-transform: uppercase; margin-bottom: 6px;
+    }
+    .q-title {
+      font-size: 28px; font-weight: 900; line-height: 1.1;
+      color: #1a1a0e; font-family: 'Georgia', serif; text-transform: uppercase;
     }
 
-    .sc-number {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 48px;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .sc-sub {
-      font-size: 11px;
-      opacity: .65;
-      margin-top: 5px;
-    }
-
-    .sc-icon {
-      position: absolute;
-      bottom: 14px;
-      right: 16px;
-      opacity: .18;
-      z-index: 0;
-    }
-
-    .sc-new-badge {
-      position: absolute;
-      top: 13px;
-      right: 14px;
-      background: var(--gold);
-      color: #5a3a00;
-      font-size: 9px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 10px;
-      letter-spacing: .5px;
-      z-index: 2;
-      animation: badge-pop .4s ease-out;
-    }
-
-    @keyframes badge-pop {
-      from {
-        transform: scale(0);
-      }
-
-      to {
-        transform: scale(1);
-      }
-    }
-
-    /* pulse ring on KPI card */
-    .pulse-ring {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -65%);
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, .22);
-      animation: ring 2.2s ease-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes ring {
-      0% {
-        transform: translate(-50%, -65%) scale(.7);
-        opacity: .8;
-      }
-
-      100% {
-        transform: translate(-50%, -65%) scale(1.8);
-        opacity: 0;
-      }
-    }
-
-    /* ── GRID SECOND ROW ────────────────────── */
-    .row-two {
+    /* Grilla de Estadísticas */
+    .stats-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr; /* 2 columnas */
       gap: 16px;
     }
-
-    @media (max-width: 768px) {
-      .row-two {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ── CHART CARD ─────────────────────────── */
-    .chart-card {
-      background: white;
-      border-radius: 16px;
-      padding: 18px 20px;
-      border: 1px solid var(--bdr);
-    }
-
-    .cc-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .cc-title {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--tm);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .cc-tag {
-      font-size: 10px;
-      background: var(--surf2);
-      border-radius: 6px;
-      padding: 3px 9px;
-      color: var(--tm);
-      font-weight: 500;
-    }
-
-    /* ── FACULTY RANKING ────────────────────── */
-    .rank-list {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .rank-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 8px;
-      border-radius: 9px;
-      cursor: pointer;
-      transition: background .15s;
-      border-bottom: 1px solid var(--bdr);
-    }
-
-    .rank-item:last-child {
-      border-bottom: none;
-    }
-
-    .rank-item:hover {
-      background: var(--surf2);
-    }
-
-    .rank-num {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      width: 22px;
+    .stat-box {
+      background: var(--cream);
+      border: 3px solid var(--border-thick);
+      border-radius: 14px;
+      padding: 16px 12px;
       text-align: center;
-      flex-shrink: 0;
+      box-shadow: 4px 4px 0 var(--border-thick);
+    }
+    .stat-box.full-width {
+      grid-column: span 2; /* La ganadora ocupa todo el ancho */
+    }
+    .stat-num {
+      font-size: 38px; font-weight: 900; color: var(--red);
+      font-family: 'Georgia', serif; line-height: 1;
+      word-break: break-word; /* Evita que palabras súper largas rompan la caja */
+    }
+    .stat-num.teal { color: var(--teal); }
+    .stat-num.purple { color: var(--purple); }
+    .stat-label {
+      font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+      text-transform: uppercase; color: #444; margin-top: 6px;
     }
 
-    .rank-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .rank-name {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .rank-sub {
-      font-size: 11px;
-      color: var(--tm);
-    }
-
-    .rank-bar-wrap {
-      width: 80px;
-      height: 5px;
-      background: var(--surf2);
-      border-radius: 3px;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .rank-bar {
-      height: 100%;
-      border-radius: 3px;
-      animation: grow-bar 1.1s ease-out;
-    }
-
-    @keyframes grow-bar {
-      from {
-        width: 0 !important;
-      }
-    }
-
-    .rank-count {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      width: 28px;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    /* ── LIVE FEED ──────────────────────────── */
-    .feed-list {
+    /* Feed en Vivo (Sin Scroll) */
+    .feed-section {
+      background: var(--cream);
+      border-radius: 14px;
+      border: 3px solid var(--border-thick);
+      box-shadow: 4px 4px 0 var(--border-thick);
       display: flex;
       flex-direction: column;
-      gap: 0;
-      max-height: 320px;
-      overflow-y: auto;
-      scrollbar-width: thin;
+      flex-grow: 1; /* Toma el espacio sobrante */
+      overflow: hidden;
     }
-
-    .feed-item {
+    .feed-header {
+      background: var(--purple);
+      padding: 12px 20px;
+      font-size: 12px; font-weight: 800; letter-spacing: 2px;
+      text-transform: uppercase; color: white;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 3px solid var(--border-thick);
+    }
+    .feed-list {
+      padding: 0 16px;
       display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 4px;
-      border-bottom: 1px solid var(--bdr);
-      animation: slide-in .38s ease-out;
+      flex-direction: column;
+      justify-content: flex-start;
+      flex-grow: 1;
     }
-
-    .feed-item:last-child {
-      border-bottom: none;
+    .feed-empty {
+      text-align: center; padding: 2rem; color: #888; 
+      font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
     }
-
+    .feed-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 0; border-bottom: 2px solid rgba(0,0,0,0.05);
+      animation: slide-in .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .feed-item:last-child { border-bottom: none; }
     @keyframes slide-in {
-      from {
-        transform: translateY(-10px);
-        opacity: 0;
-      }
-
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
+      from { transform: translateX(-20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
     }
+    .feed-word { font-size: 18px; font-weight: 900; color: var(--red); font-family: 'Georgia', serif;}
+    .feed-time { font-size: 12px; font-weight: 700; color: #888; margin-left: auto; }
 
-    .feed-av {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
+    /* =========================================
+       PANEL DERECHO (Lienzo Nube de Palabras)
+       ========================================= */
+    .panel-right {
+      background: var(--cream);
+      border-radius: 18px;
+      border: 4px solid var(--gold);
+      box-shadow: 6px 6px 0 var(--border-thick);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    .wc-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px; background: rgba(0,0,0,.05);
+      border-bottom: 2px solid rgba(244,185,66,.4);
+    }
+    .wc-title {
+      font-size: 14px; font-weight: 800; letter-spacing: 2px;
+      text-transform: uppercase; color: #1a1a0e;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .wc-canvas-wrap {
+      flex-grow: 1; /* La nube toma todo el alto disponible */
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
-      font-weight: 700;
-      flex-shrink: 0;
+      padding: 10px;
     }
-
-    .feed-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .feed-name {
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .feed-detail {
-      font-size: 11px;
-      color: var(--tm);
-      margin-top: 1px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .feed-time {
-      font-size: 10px;
-      color: var(--tm);
-      margin-top: 2px;
-    }
-
-    .feed-empty {
-      text-align: center;
-      padding: 2rem;
-      color: var(--tm);
-      font-size: .9rem;
-    }
-
-    /* ── ROW THREE: CHARTS + RHYTHM ─────────── */
-    .row-three {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 16px;
-    }
-
-    @media (max-width: 900px) {
-      .row-three {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .row-three {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* donut */
-    .donut-wrap {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .donut-legend {
-      flex: 1;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 9px;
-    }
-
-    .l-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .l-name {
-      font-size: 12px;
-      color: var(--tm);
-      flex: 1;
-    }
-
-    .l-pct {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .l-bar {
-      height: 3px;
-      border-radius: 2px;
-      margin-top: 2px;
-      transition: width .8s ease;
-    }
-
-    .donut-slice {
-      animation: draw-donut 1.2s ease-out;
-    }
-
-    @keyframes draw-donut {
-      from {
-        stroke-dasharray: 0 251.2;
-      }
-    }
-
-    /* rhythm chart */
-    .rhythm-bars {
-      display: flex;
-      align-items: flex-end;
-      gap: 5px;
-      height: 64px;
-      margin-top: 10px;
-    }
-
-    .rbar {
-      flex: 1;
-      border-radius: 4px 4px 0 0;
-      min-height: 4px;
-      transition: height .5s ease, opacity .3s;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .rbar:hover {
-      opacity: 1 !important;
-    }
-
-    .rbar::after {
-      content: attr(data-val) ' reg.';
-      position: absolute;
-      bottom: calc(100% + 4px);
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 9px;
-      font-weight: 600;
-      color: var(--tp);
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .15s;
-    }
-
-    .rbar:hover::after {
-      opacity: 1;
-    }
-
-    .rhythm-labels {
-      display: flex;
-      gap: 5px;
-      margin-top: 4px;
-    }
-
-    .rlabel {
-      flex: 1;
-      text-align: center;
-      font-size: 9px;
-      color: var(--tm);
-    }
-
-    /* ── MINI STAT ROW ──────────────────────── */
-    .mini-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    @media (max-width: 700px) {
-      .mini-row {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    .mini-stat {
-      background: white;
-      border-radius: 13px;
-      padding: 14px 16px;
-      border: 1px solid var(--bdr);
-      text-align: center;
-    }
-
-    .ms-num {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    .ms-label {
-      font-size: 10px;
-      color: var(--tm);
-      margin-top: 2px;
-      letter-spacing: .5px;
-      text-transform: uppercase;
-    }
-
-    .ms-delta {
-      font-size: 10px;
-      margin-top: 4px;
-      font-weight: 500;
-    }
-
-    .delta-up {
-      color: var(--teal);
-    }
-
-    .delta-n {
-      color: var(--tm);
-    }
-
-    /* ── FOOTER ─────────────────────────────── */
-    .footer {
-      text-align: center;
-      padding: 10px 0 20px;
-      font-size: 11px;
-      color: var(--tm);
-      opacity: .7;
-    }
-
-    /* ── CHART.JS CANVAS override ───────────── */
-    .canvas-wrap {
-      position: relative;
-      height: 220px;
-    }
-
-    .canvas-wrap-sm {
-      position: relative;
-      height: 190px;
-    }
+    #wordcloud { display: block; }
   </style>
 </head>
-
 <body>
 
-  <!-- ── TOPBAR ── -->
   <div class="topbar">
-    <div class="topbar-brand">
-      <div class="alpaca-badge">
-        <!-- Alpaca SVG -->
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="12" cy="16" rx="5.5" ry="4.5" fill="#C0392B" />
-          <rect x="10.5" y="9.5" width="3" height="5" rx="1.5" fill="#C0392B" />
-          <ellipse cx="12" cy="8.5" rx="2.8" ry="2.5" fill="#C0392B" />
-          <ellipse cx="12" cy="10.2" rx="1.6" ry="1.1" fill="#E8705E" />
-          <path d="M9.4 6.5 Q8.5 4.2 10 5.2 Q10.5 6 10.2 7Z" fill="#C0392B" />
-          <path d="M14.6 6.5 Q15.5 4.2 14 5.2 Q13.5 6 13.8 7Z" fill="#C0392B" />
-          <circle cx="10.8" cy="7.8" r=".55" fill="white" />
-          <circle cx="10.95" cy="7.85" r=".28" fill="#1a1a2e" />
-          <circle cx="13.2" cy="7.8" r=".55" fill="white" />
-          <circle cx="13.35" cy="7.85" r=".28" fill="#1a1a2e" />
-          <rect x="8" y="19.5" width="1.8" height="3.5" rx=".9" fill="#C0392B" />
-          <rect x="10.2" y="19.5" width="1.8" height="3.5" rx=".9" fill="#C0392B" />
-          <rect x="12.8" y="19.5" width="1.8" height="3.5" rx=".9" fill="#9B2D22" />
-          <rect x="14.5" y="19.5" width="1.8" height="3.5" rx=".9" fill="#9B2D22" />
-          <ellipse cx="12" cy="14" rx="3" ry="1.2" fill="#E8705E" opacity=".4" />
-          <path d="M17.3 15 Q19.5 13 18.5 16 Q17.8 17.5 17 16.5Z" fill="#C0392B" />
-          <circle cx="11.2" cy="10.5" r=".28" fill="#9B2D22" />
-          <circle cx="12.8" cy="10.5" r=".28" fill="#9B2D22" />
-        </svg>
-      </div>
-      <div class="topbar-text">
-        <strong>ESPOCH · CineForo 2025</strong>
-        <span>Sostenibilidad y Medio Ambiente</span>
+    <div class="logo-container">
+      <svg viewBox="0 0 175 60" height="40" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="grad27" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#F4B942"/> <stop offset="100%" stop-color="#C0392B"/> </linearGradient>
+          </defs>
+          <text x="0" y="48" font-family="Arial Black, Impact, sans-serif" font-size="52" font-weight="900" fill="url(#grad27)" font-style="italic" letter-spacing="-3">27</text>
+          <text x="68" y="28" font-family="'Playfair Display', serif" font-size="24" font-style="italic" font-weight="700" fill="#f5f0e0">Años</text>
+          <text x="70" y="44" font-family="'Segoe UI', sans-serif" font-size="7.5" font-weight="800" fill="#F4B942" letter-spacing="1">XXVII ANIVERSARIO</text>
+      </svg>
+      <div class="logo-text-group">
+        <strong>    Facultad de Informática y Electrónica * FIE   </strong>
+        <span>CINE FORO </span>
       </div>
     </div>
+    
     <div class="live-pill">
       <div class="live-dot"></div>
-      EN VIVO
+      <span>AUDITORIO EN VIVO</span>
     </div>
   </div>
 
-  <!-- ── HERO ── -->
-  <div class="hero">
-    <div class="hero-sub">Panel en Tiempo Real</div>
-    <div class="hero-title">Asistencia <span>CineForo</span></div>
+  <div class="board-container">
+    
+    <div class="panel-left">
+      
+      <div class="speech-bubble">
+        <div class="q-label">La pregunta</div>
+        <div class="q-title">¿Qué te llevas<br>del día de hoy?</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-num" id="statRespuestas">0</div>
+          <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num teal" id="statUnicas">0</div>
+          <div class="stat-label">Únicas</div>
+        </div>
+        <div class="stat-box full-width">
+          <div class="stat-num purple" id="statMasVotada">—</div>
+          <div class="stat-label">Palabra ganadora</div>
+        </div>
+      </div>
+
+      <div class="feed-section">
+        <div class="feed-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="13 2 13 9 22 9 11 22 11 15 2 15 13 2"></polyline></svg>
+          Ingresos Recientes
+        </div>
+        <div class="feed-list" id="liveLog">
+          <div class="feed-empty">Esperando participaciones...</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="panel-right">
+      <div class="wc-header">
+        <div class="wc-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a0e" stroke-width="2.5">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Nube de Palabras
+        </div>
+      </div>
+      <div class="wc-canvas-wrap" id="wcWrap">
+        <canvas id="wordcloud"></canvas>
+      </div>
+    </div>
+
   </div>
 
-  <!-- ── JOURNEY BAR ── -->
-  <div class="journey">
-    <div class="journey-step">
-      <div class="j-icon" style="background:rgba(244,185,66,.15);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <rect x="5" y="2" width="14" height="20" rx="3" />
-          <line x1="12" y1="18" x2="12" y2="18.01" />
-        </svg>
-      </div>
-      <div class="j-label"><strong>Tu celular</strong>Escaneas el QR</div>
-    </div>
-    <div class="j-arrow">
-      <div class="j-arrowhead"></div>
-    </div>
-    <div class="journey-step">
-      <div class="j-icon" style="background:rgba(74,111,191,.2);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B9FD4" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-          <polyline points="14 2 14 8 20 8" />
-          <line x1="9" y1="13" x2="15" y2="13" />
-          <line x1="9" y1="17" x2="13" y2="17" />
-        </svg>
-      </div>
-      <div class="j-label"><strong>Formulario</strong>Llenas tus datos</div>
-    </div>
-    <div class="j-arrow">
-      <div class="j-arrowhead"></div>
-    </div>
-    <div class="journey-step">
-      <div class="j-icon" style="background:rgba(26,155,138,.2);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A9B8A" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="16 16 12 12 8 16" />
-          <line x1="12" y1="12" x2="12" y2="21" />
-          <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3" />
-        </svg>
-      </div>
-      <div class="j-label"><strong>La nube</strong>Guarda tu registro</div>
-    </div>
-    <div class="j-arrow">
-      <div class="j-arrowhead"></div>
-    </div>
-    <div class="journey-step">
-      <div class="j-icon" style="background:rgba(244,185,66,.15);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4B942" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        </svg>
-      </div>
-      <div class="j-label"><strong>¡Apareces aquí!</strong>Al instante</div>
-    </div>
-  </div>
-
-  <!-- ── MAIN CONTENT ── -->
-  <div class="main">
-
-    <!-- 4 BIG STAT CARDS -->
-    <div class="cards-row">
-
-      <!-- Total asistentes (KPI principal - compatible con app.js) -->
-      <div class="stat-card" style="background:var(--red);color:white;" id="kpi-wrap">
-        <div class="pulse-ring"></div>
-        <div class="sc-new-badge" id="new-badge" style="display:none;">+NUEVO</div>
-        <div class="sc-top">
-          <div class="sc-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 00-3-3.87" />
-              <path d="M16 3.13a4 4 0 010 7.75" />
-            </svg>
-            Personas Registradas
-          </div>
-          <!-- ID compatible con app.js -->
-          <div class="sc-number" id="contadorTotal">0</div>
-          <div class="sc-sub">Total acumulado en tiempo real</div>
-        </div>
-        <div class="sc-icon">
-          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
-            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 00-3-3.87" />
-            <path d="M16 3.13a4 4 0 010 7.75" />
-          </svg>
-        </div>
-      </div>
-
-      <!-- ESPOCH -->
-      <div class="stat-card" style="background:var(--indigo);color:white;">
-        <div class="sc-top">
-          <div class="sc-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            Comunidad ESPOCH
-          </div>
-          <div class="sc-number" id="countEspoch">—</div>
-          <div class="sc-sub">Estudiantes y docentes</div>
-        </div>
-        <div class="sc-icon">
-          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-          </svg>
-        </div>
-      </div>
-
-      <!-- Ciudades -->
-      <div class="stat-card" style="background:var(--teal);color:white;">
-        <div class="sc-top">
-          <div class="sc-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            Ciudades presentes
-          </div>
-          <div class="sc-number" id="countCiudades">—</div>
-          <div class="sc-sub">Diversidad de origen</div>
-        </div>
-        <div class="sc-icon">
-          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-        </div>
-      </div>
-
-      <!-- Facultades -->
-      <div class="stat-card" style="background:var(--gold);color:#5a3a00;">
-        <div class="sc-top">
-          <div class="sc-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-              <path d="M6 12v5c3 3 9 3 12 0v-5" />
-            </svg>
-            Facultades activas
-          </div>
-          <div class="sc-number" id="countFacultades">—</div>
-          <div class="sc-sub">Compitiendo en el ranking</div>
-        </div>
-        <div class="sc-icon">
-          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#5a3a00" stroke-width="1">
-            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-            <path d="M6 12v5c3 3 9 3 12 0v-5" />
-          </svg>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- RANKING + LIVE FEED -->
-    <div class="row-two">
-
-      <!-- RANKING DE FACULTADES -->
-      <div class="chart-card">
-        <div class="cc-header">
-          <div class="cc-title">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--gold)">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z" />
-            </svg>
-            Ranking de Facultades
-          </div>
-          <div class="cc-tag">¿Quién trajo más?</div>
-        </div>
-        <!-- Contenedor compatible con app.js - también se puede usar el canvas original -->
-        <div id="rankingFacultadesNuevo" class="rank-list">
-          <!-- Se puebla por JS o puede ser reemplazado por canvas -->
-        </div>
-        <!-- Canvas original de app.js (oculto o visible según preferencia) -->
-        <div class="canvas-wrap" id="facultades-canvas-wrap" style="display:none;">
-          <canvas id="chartFacultades"></canvas>
-        </div>
-      </div>
-
-      <!-- REGISTROS EN VIVO -->
-      <div class="chart-card">
-        <div class="cc-header">
-          <div class="cc-title">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg>
-            Registros en vivo
-          </div>
-          <div class="live-pill"
-            style="background:rgba(192,57,43,.08);border-color:rgba(192,57,43,.2);color:var(--red);font-size:10px;padding:3px 10px;">
-            <div class="live-dot" style="background:var(--red);box-shadow:none;width:6px;height:6px;"></div>
-            AHORA
-          </div>
-        </div>
-        <!-- ID compatible con app.js -->
-        <div id="liveLog" class="feed-list">
-          <div class="feed-empty">Esperando que lleguen los asistentes…</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- DONUTS + RITMO INTERACTIVO -->
-    <div class="row-three">
-
-      <!-- ESPOCH VS VISITANTES DONUT -->
-      <div class="chart-card">
-        <div class="cc-header">
-          <div class="cc-title">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--tm)" stroke-width="2">
-              <circle cx="12" cy="12" r="10" />
-            </svg>
-            ESPOCH vs Visitantes
-          </div>
-          <div class="cc-tag">Comunidad</div>
-        </div>
-        <!-- Canvas compatible con app.js -->
-        <div class="canvas-wrap-sm" id="dona-canvas-wrap">
-          <canvas id="chartDona"></canvas>
-        </div>
-        <!-- Alternativa SVG si app.js no puebla el canvas -->
-        <div id="dona-svg-fallback" style="display:none;">
-          <div class="donut-wrap">
-            <svg width="80" height="80" viewBox="0 0 80 80" style="flex-shrink:0;">
-              <circle cx="40" cy="40" r="28" fill="none" stroke="#F1EFE8" stroke-width="13" />
-              <circle class="donut-slice" cx="40" cy="40" r="28" fill="none" stroke="var(--red)" stroke-width="13"
-                stroke-dasharray="188 251" transform="rotate(-90 40 40)" />
-              <circle class="donut-slice" cx="40" cy="40" r="28" fill="none" stroke="var(--indigo)" stroke-width="13"
-                stroke-dasharray="63 251" transform="rotate(159 40 40)" style="animation-delay:.3s" />
-            </svg>
-            <div class="donut-legend">
-              <div class="legend-item">
-                <div class="l-dot" style="background:var(--red);"></div>
-                <div style="flex:1">
-                  <div style="display:flex;justify-content:space-between;"><span class="l-name">ESPOCH</span><span
-                      class="l-pct" style="color:var(--red);">—</span></div>
-                  <div class="l-bar" id="bar-espoch" style="background:var(--red);width:0%;"></div>
-                </div>
-              </div>
-              <div class="legend-item">
-                <div class="l-dot" style="background:var(--indigo);"></div>
-                <div style="flex:1">
-                  <div style="display:flex;justify-content:space-between;"><span class="l-name">Visitantes</span><span
-                      class="l-pct" style="color:var(--indigo);">—</span></div>
-                  <div class="l-bar" id="bar-visit" style="background:var(--indigo);width:0%;"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CIUDADES DONUT -->
-      <div class="chart-card">
-        <div class="cc-header">
-          <div class="cc-title">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--tm)" stroke-width="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            ¿De dónde vienen?
-          </div>
-          <div class="cc-tag">Ciudades</div>
-        </div>
-        <div class="canvas-wrap-sm" id="ciudades-canvas-wrap">
-          <canvas id="chartCiudades"></canvas>
-        </div>
-      </div>
-
-      <!-- NUBE DE PALABRAS -->
-      <div class="chart-card" style="display:flex; flex-direction:column;">
-        <div class="cc-header" style="margin-bottom:8px;">
-          <div class="cc-title">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
-            Nube de Palabras
-          </div>
-          <div class="cc-tag" style="background:var(--teal-bg); color:var(--teal);">¡En vivo!</div>
-        </div>
-        <div style="flex:1; display:flex; align-items:center; justify-content:center; min-height: 180px; position:relative; width:100%;">
-          <canvas id="wordcloud" style="width:100%; height:100%;"></canvas>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- MINI STATS BOTTOM -->
-    <div class="mini-row">
-      <div class="mini-stat">
-        <div class="ms-num" style="color:var(--red);" id="ms-facultades">—</div>
-        <div class="ms-label">Facultades</div>
-        <div class="ms-delta delta-up">↑ activas</div>
-      </div>
-      <div class="mini-stat">
-        <div class="ms-num" style="color:var(--teal);" id="ms-ciudades">—</div>
-        <div class="ms-label">Ciudades</div>
-        <div class="ms-delta delta-n">representadas</div>
-      </div>
-      <div class="mini-stat">
-        <div class="ms-num" style="color:var(--indigo);" id="ms-ultimo">—</div>
-        <div class="ms-label">Último registro</div>
-        <div class="ms-delta delta-up" id="ms-ultimo-sub">flujo activo</div>
-      </div>
-      <div class="mini-stat">
-        <div class="ms-num" style="color:var(--gold);" id="ms-pct-espoch">—</div>
-        <div class="ms-label">ESPOCH</div>
-        <div class="ms-delta delta-n">comunidad</div>
-      </div>
-    </div>
-
-  </div><!-- /main -->
-
-  <p class="footer">Sistema de registro sin servidores · Los datos viajan directo del celular a esta pantalla · ESPOCH
-    2025</p>
-
-  <!-- ── RITMO CHART JS ── -->
   <script>
-    // ── WordCloud helpers (se renderiza en app.js) ────────────
+    // Paleta de colores vibrantes para la nube (Aesthetic Comic/Juego)
+    const COLORS = ['#C0392B','#1A9B8A','#F4B942','#6B5FCF','#2980B9','#D35400','#27AE60'];
+    let words = {};
+    let feedItems = [];
 
-    // ── Ranking helper (usado si app.js no renderiza el canvas) ───
-    // app.js puede llamar window.updateRankingUI(data) para poblar las tarjetas
-    const RANK_COLORS = ['var(--red)', 'var(--indigo)', 'var(--teal)', 'var(--gold)', 'var(--tm)'];
-    const RANK_NUM_COLORS = ['#F4B942', '#9CA3AF', '#CD7C3A'];
-
-    window.updateRankingUI = function (entries) {
-      // entries: [{name, count}] ordenado desc
-      const container = document.getElementById('rankingFacultadesNuevo');
-      if (!container) return;
-      const max = entries[0]?.count || 1;
-      container.innerHTML = entries.slice(0, 5).map((e, i) => `
-        <div class="rank-item">
-          <div class="rank-num" style="color:${RANK_NUM_COLORS[i] || 'var(--tm)'};">${i + 1}</div>
-          <div class="rank-info">
-            <div class="rank-name">${e.name}</div>
-            <div class="rank-sub">${e.sub || ''}</div>
-          </div>
-          <div class="rank-bar-wrap">
-            <div class="rank-bar" style="background:${RANK_COLORS[i]};width:${Math.round((e.count / max) * 100)}%;"></div>
-          </div>
-          <div class="rank-count">${e.count}</div>
-        </div>`).join('');
-
-      // actualizar mini stats
-      const fac = document.getElementById('countFacultades');
-      const msf = document.getElementById('ms-facultades');
-      if (fac) fac.textContent = entries.length;
-      if (msf) msf.textContent = entries.length;
-    };
-
-    // ── Mini stats helpers ─────────────────────────────────────────
-    window.updateMiniStats = function ({ ciudades, pctEspoch, espochCount, lastTime }) {
-      const cc = document.getElementById('countCiudades');
-      const mc = document.getElementById('ms-ciudades');
-      const pe = document.getElementById('ms-pct-espoch');
-      const ce = document.getElementById('countEspoch');
-      const lu = document.getElementById('ms-ultimo');
-      if (cc) cc.textContent = ciudades ?? '—';
-      if (mc) mc.textContent = ciudades ?? '—';
-      if (pe) pe.textContent = pctEspoch != null ? pctEspoch + '%' : '—';
-      if (ce) ce.textContent = espochCount ?? '—';
-      if (lu && lastTime) lu.textContent = lastTime;
-    };
-
-    // ── KPI bump animation ─────────────────────────────────────────
-    // Observa cambios en #contadorTotal para animar badge
-    const kpiEl = document.getElementById('contadorTotal');
-    const badgeEl = document.getElementById('new-badge');
-    if (kpiEl) {
-      const obs = new MutationObserver(() => {
-        if (badgeEl) {
-          badgeEl.style.display = 'block';
-          badgeEl.style.animation = 'none';
-          requestAnimationFrame(() => { badgeEl.style.animation = ''; });
-          clearTimeout(window._badgeTimer);
-          window._badgeTimer = setTimeout(() => { badgeEl.style.display = 'none'; }, 3000);
-        }
-        kpiEl.style.transform = 'scale(1.12)';
-        setTimeout(() => { kpiEl.style.transform = 'scale(1)'; kpiEl.style.transition = 'transform .3s'; }, 200);
-      });
-      obs.observe(kpiEl, { childList: true, characterData: true, subtree: true });
+    // Lógica para estructurar el array que lee la librería WordCloud
+    function getWordList() {
+      return Object.entries(words)
+        .map(([w, c]) => [w, Math.max(16, Math.min(100, c * 12 + 16))]) // Aumenté el tamaño base para proyector
+        .sort((a, b) => b[1] - a[1]);
     }
+
+    // Dibujar la nube
+    function renderCloud() {
+      const canvas = document.getElementById('wordcloud');
+      const wrap = document.getElementById('wcWrap');
+      
+      // Adaptar el tamaño del canvas al panel derecho
+      canvas.width = wrap.clientWidth;
+      canvas.height = wrap.clientHeight;
+      
+      const list = getWordList();
+      if (!list.length) return;
+      
+      WordCloud(canvas, {
+        list,
+        gridSize: Math.round(16 * canvas.width / 1024),
+        weightFactor: 1.2,
+        fontFamily: 'Georgia, serif',
+        color: () => COLORS[Math.floor(Math.random() * COLORS.length)],
+        rotateRatio: 0.2, // Pocas palabras verticales para facilitar lectura
+        rotationSteps: 2,
+        backgroundColor: 'transparent', // INTEGRACIÓN CON EL FONDO CREAM
+        drawOutOfBound: false,
+        minSize: 14,
+        shrinkToFit: true,
+        shuffle: true
+      });
+    }
+
+    // Actualizar los números de la izquierda
+    function updateStats() {
+      const total = Object.values(words).reduce((a, b) => a + b, 0);
+      const unique = Object.keys(words).length;
+      
+      // Encontrar la palabra con más peso
+      const top = Object.entries(words).sort((a, b) => b[1] - a[1])[0];
+      
+      document.getElementById('statRespuestas').textContent = total;
+      document.getElementById('statUnicas').textContent = unique;
+      
+      const elTop = document.getElementById('statMasVotada');
+      elTop.textContent = top ? top[0] : '—';
+      
+      // Control de tamaño de fuente inteligente para palabras ganadoras larguísimas
+      if (top && top[0].length > 12) {
+        elTop.style.fontSize = '24px';
+      } else if (top && top[0].length > 8) {
+        elTop.style.fontSize = '30px';
+      } else {
+        elTop.style.fontSize = '38px';
+      }
+    }
+
+    // Actualizar la lista en vivo (Limitado estrictamente a 5)
+    function updateFeed() {
+      const log = document.getElementById('liveLog');
+      if (!feedItems.length) {
+        log.innerHTML = '<div class="feed-empty">Esperando participaciones...</div>';
+        return;
+      }
+      log.innerHTML = feedItems.map(f => `
+        <div class="feed-item">
+          <span class="feed-word">${f.word}</span>
+          <span class="feed-time">${f.time}</span>
+        </div>`).join('');
+    }
+
+    // Funciones "Puente" para que app.js interactúe con el HTML limpiamente
+    window.addWordcloudEntry = function(word) {
+      const now = new Date();
+      const t = now.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' }); // Hora sin segundos (más limpio)
+      
+      const w = word.trim().toUpperCase();
+      if (!w) return;
+      
+      // Solo mantenemos las últimas 5 en el feed visual para evitar scroll
+      feedItems.unshift({ word: w, time: t });
+      if (feedItems.length > 5) feedItems.pop(); 
+      
+      updateFeed();
+    };
+
+    window.loadWordcloudData = function(wordMap) {
+      words = { ...wordMap };
+      updateStats();
+      renderCloud();
+    };
+
+    // Redibujar si cambia el tamaño de la ventana
+    window.addEventListener('resize', renderCloud);
+    window.addEventListener('load', renderCloud);
   </script>
 
-  <!-- app.js original — sin modificar -->
-  <script type="module" src="app.js?v=2"></script>
-
 </body>
-
 </html>

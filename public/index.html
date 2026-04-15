@@ -1,30 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cine Foro Sostenibilidad · ESPOCH</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
   <style>
     :root {
-      --green-deep:  #1a3a2a;
-      --green-mid:   #2d6a4f;
+      --green-deep: #1a3a2a;
+      --green-mid: #2d6a4f;
       --green-light: #52b788;
-      --green-pale:  #b7e4c7;
-      --cream:       #f8f4ec;
-      --gold:        #d4a853;
-      --text-dark:   #1c2b22;
-      --text-mid:    #3d5a47;
-      --text-light:  #6b8f78;
+      --green-pale: #b7e4c7;
+      --cream: #f8f4ec;
+      --gold: #d4a853;
+      --text-dark: #1c2b22;
+      --text-mid: #3d5a47;
+      --text-light: #6b8f78;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       min-height: 100vh;
       background-color: var(--green-deep);
       background-image:
-        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(82,183,136,.18) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(82, 183, 136, .18) 0%, transparent 70%),
         url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,.04)'/%3E%3C/svg%3E");
       display: flex;
       flex-direction: column;
@@ -37,34 +46,82 @@
 
     /* ── Leaf decoration ─────────────────────── */
     .leaf-bg {
-      position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
     }
+
     .leaf-bg span {
       position: absolute;
       font-size: clamp(2rem, 6vw, 5rem);
       opacity: .06;
       animation: drift 18s ease-in-out infinite alternate;
     }
-    .leaf-bg span:nth-child(1)  { top:5%;  left:3%;  animation-delay:0s; }
-    .leaf-bg span:nth-child(2)  { top:15%; right:5%; animation-delay:3s; font-size:3rem; }
-    .leaf-bg span:nth-child(3)  { top:55%; left:8%;  animation-delay:6s; font-size:4rem; }
-    .leaf-bg span:nth-child(4)  { bottom:10%; right:4%; animation-delay:9s; }
-    .leaf-bg span:nth-child(5)  { bottom:30%; left:50%; animation-delay:2s; font-size:2rem; }
+
+    .leaf-bg span:nth-child(1) {
+      top: 5%;
+      left: 3%;
+      animation-delay: 0s;
+    }
+
+    .leaf-bg span:nth-child(2) {
+      top: 15%;
+      right: 5%;
+      animation-delay: 3s;
+      font-size: 3rem;
+    }
+
+    .leaf-bg span:nth-child(3) {
+      top: 55%;
+      left: 8%;
+      animation-delay: 6s;
+      font-size: 4rem;
+    }
+
+    .leaf-bg span:nth-child(4) {
+      bottom: 10%;
+      right: 4%;
+      animation-delay: 9s;
+    }
+
+    .leaf-bg span:nth-child(5) {
+      bottom: 30%;
+      left: 50%;
+      animation-delay: 2s;
+      font-size: 2rem;
+    }
 
     @keyframes drift {
-      from { transform: translateY(0) rotate(-10deg); }
-      to   { transform: translateY(-20px) rotate(10deg); }
+      from {
+        transform: translateY(0) rotate(-10deg);
+      }
+
+      to {
+        transform: translateY(-20px) rotate(10deg);
+      }
     }
 
     /* ── Card wrapper ────────────────────────── */
     .card-wrap {
-      position: relative; z-index: 1;
-      width: 100%; max-width: 520px;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 520px;
       animation: fadeUp .8s ease both;
     }
+
     @keyframes fadeUp {
-      from { opacity:0; transform: translateY(30px); }
-      to   { opacity:1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* ── Header area ─────────────────────────── */
@@ -72,10 +129,11 @@
       text-align: center;
       margin-bottom: 2rem;
     }
+
     .badge {
       display: inline-block;
-      background: rgba(212,168,83,.15);
-      border: 1px solid rgba(212,168,83,.4);
+      background: rgba(212, 168, 83, .15);
+      border: 1px solid rgba(212, 168, 83, .4);
       color: var(--gold);
       font-size: .72rem;
       font-weight: 500;
@@ -85,6 +143,7 @@
       border-radius: 999px;
       margin-bottom: 1.1rem;
     }
+
     .header h1 {
       font-family: 'Playfair Display', serif;
       font-size: clamp(2rem, 7vw, 2.8rem);
@@ -93,10 +152,12 @@
       color: var(--cream);
       margin-bottom: .5rem;
     }
+
     .header h1 em {
       font-style: normal;
       color: var(--green-light);
     }
+
     .header p {
       font-size: .92rem;
       color: var(--text-light);
@@ -106,38 +167,67 @@
 
     /* ── Film strip decoration ───────────────── */
     .film-strip {
-      display: flex; justify-content: center; gap: .45rem;
+      display: flex;
+      justify-content: center;
+      gap: .45rem;
       margin: 1.2rem 0;
     }
+
     .film-strip span {
-      width: 24px; height: 16px;
-      border: 1.5px solid rgba(82,183,136,.4);
+      width: 24px;
+      height: 16px;
+      border: 1.5px solid rgba(82, 183, 136, .4);
       border-radius: 2px;
       position: relative;
       animation: flicker 3s ease-in-out infinite;
     }
-    .film-strip span:nth-child(odd)  { animation-delay: .5s; }
-    .film-strip span::before, .film-strip span::after {
-      content:'';
-      position:absolute;
-      width:4px; height:4px;
-      background: rgba(82,183,136,.35);
-      border-radius:1px;
+
+    .film-strip span:nth-child(odd) {
+      animation-delay: .5s;
     }
-    .film-strip span::before { top: -5px; left: 50%; transform:translateX(-50%); }
-    .film-strip span::after  { bottom: -5px; left: 50%; transform:translateX(-50%); }
+
+    .film-strip span::before,
+    .film-strip span::after {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(82, 183, 136, .35);
+      border-radius: 1px;
+    }
+
+    .film-strip span::before {
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .film-strip span::after {
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
     @keyframes flicker {
-      0%,100% { opacity:.4; } 50% { opacity:1; }
+
+      0%,
+      100% {
+        opacity: .4;
+      }
+
+      50% {
+        opacity: 1;
+      }
     }
 
     /* ── Form card ───────────────────────────── */
     .card {
-      background: rgba(255,255,255,.04);
+      background: rgba(255, 255, 255, .04);
       backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,.1);
+      border: 1px solid rgba(255, 255, 255, .1);
       border-radius: 20px;
       padding: 2rem 2rem 2.4rem;
-      box-shadow: 0 32px 80px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .08);
     }
 
     /* ── Form elements ───────────────────────── */
@@ -145,13 +235,34 @@
       margin-bottom: 1.25rem;
       animation: fadeUp .7s ease both;
     }
-    .form-group:nth-child(1)  { animation-delay:.1s }
-    .form-group:nth-child(2)  { animation-delay:.18s }
-    .form-group:nth-child(3)  { animation-delay:.26s }
-    .form-group:nth-child(4)  { animation-delay:.34s }
-    .form-group:nth-child(5)  { animation-delay:.42s }
-    .form-group:nth-child(6)  { animation-delay:.5s }
-    .form-group:nth-child(7)  { animation-delay:.58s }
+
+    .form-group:nth-child(1) {
+      animation-delay: .1s
+    }
+
+    .form-group:nth-child(2) {
+      animation-delay: .18s
+    }
+
+    .form-group:nth-child(3) {
+      animation-delay: .26s
+    }
+
+    .form-group:nth-child(4) {
+      animation-delay: .34s
+    }
+
+    .form-group:nth-child(5) {
+      animation-delay: .42s
+    }
+
+    .form-group:nth-child(6) {
+      animation-delay: .5s
+    }
+
+    .form-group:nth-child(7) {
+      animation-delay: .58s
+    }
 
     label {
       display: block;
@@ -163,11 +274,12 @@
       margin-bottom: .45rem;
     }
 
-    input, select {
+    input,
+    select {
       width: 100%;
       padding: .75rem 1rem;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .12);
       border-radius: 10px;
       color: var(--cream);
       font-family: 'DM Sans', sans-serif;
@@ -176,20 +288,37 @@
       outline: none;
       -webkit-appearance: none;
     }
-    input::placeholder { color: rgba(248,244,236,.3); }
-    input:focus, select:focus {
-      border-color: var(--green-light);
-      background: rgba(82,183,136,.08);
-      box-shadow: 0 0 0 3px rgba(82,183,136,.15);
+
+    input::placeholder {
+      color: rgba(248, 244, 236, .3);
     }
-    select option { background: var(--green-deep); color: var(--cream); }
+
+    input:focus,
+    select:focus {
+      border-color: var(--green-light);
+      background: rgba(82, 183, 136, .08);
+      box-shadow: 0 0 0 3px rgba(82, 183, 136, .15);
+    }
+
+    select option {
+      background: var(--green-deep);
+      color: var(--cream);
+    }
 
     /* custom select arrow */
-    .select-wrap { position: relative; }
+    .select-wrap {
+      position: relative;
+    }
+
     .select-wrap::after {
       content: '▾';
-      position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
-      color: var(--green-light); pointer-events: none; font-size: .85rem;
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--green-light);
+      pointer-events: none;
+      font-size: .85rem;
     }
 
     .hidden-field {
@@ -204,6 +333,7 @@
       transition: max-height .45s ease, opacity .35s ease, margin .35s ease;
       margin-top: 0;
     }
+
     #camposEspoch.visible {
       max-height: 250px;
       opacity: 1;
@@ -213,7 +343,7 @@
     /* ── Divider ─────────────────────────────── */
     .divider {
       border: none;
-      border-top: 1px solid rgba(255,255,255,.08);
+      border-top: 1px solid rgba(255, 255, 255, .08);
       margin: 1.6rem 0 1.4rem;
     }
 
@@ -233,35 +363,54 @@
       position: relative;
       overflow: hidden;
       transition: transform .15s, box-shadow .15s, opacity .2s;
-      box-shadow: 0 6px 24px rgba(45,106,79,.45);
+      box-shadow: 0 6px 24px rgba(45, 106, 79, .45);
     }
+
     #btnSubmit::before {
       content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,.15), transparent);
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, .15), transparent);
       opacity: 0;
       transition: opacity .2s;
     }
-    #btnSubmit:hover:not(:disabled)::before { opacity: 1; }
+
+    #btnSubmit:hover:not(:disabled)::before {
+      opacity: 1;
+    }
+
     #btnSubmit:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(45,106,79,.55);
+      box-shadow: 0 10px 30px rgba(45, 106, 79, .55);
     }
-    #btnSubmit:active:not(:disabled) { transform: translateY(0); }
-    #btnSubmit:disabled { opacity: .6; cursor: not-allowed; }
+
+    #btnSubmit:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    #btnSubmit:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
 
     /* spinner inside button */
     .spinner {
       display: inline-block;
-      width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,.4);
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, .4);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin .7s linear infinite;
       vertical-align: middle;
       margin-right: .5rem;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* ── Success state ───────────────────────── */
     .success-box {
@@ -269,22 +418,36 @@
       padding: 2.5rem 1.5rem;
       animation: fadeUp .6s ease both;
     }
+
     .success-icon {
       font-size: 3.5rem;
       margin-bottom: 1rem;
-      animation: pop .5s cubic-bezier(.36,.07,.19,.97) both;
+      animation: pop .5s cubic-bezier(.36, .07, .19, .97) both;
     }
+
     @keyframes pop {
-      0%   { transform: scale(0); opacity:0; }
-      80%  { transform: scale(1.15); }
-      100% { transform: scale(1); opacity:1; }
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      80% {
+        transform: scale(1.15);
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
+
     .success-box h2 {
       font-family: 'Playfair Display', serif;
       font-size: 1.8rem;
       color: var(--green-light);
       margin-bottom: .6rem;
     }
+
     .success-box p {
       color: var(--text-light);
       font-size: .95rem;
@@ -296,16 +459,19 @@
       margin-top: 1.8rem;
       text-align: center;
       font-size: .75rem;
-      color: rgba(255,255,255,.2);
+      color: rgba(255, 255, 255, .2);
       letter-spacing: .04em;
     }
 
     /* ── Mobile tweaks ───────────────────────── */
     @media (max-width: 400px) {
-      .card { padding: 1.5rem 1.25rem; }
+      .card {
+        padding: 1.5rem 1.25rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Decorative leaves -->
@@ -318,7 +484,7 @@
     <!-- Header -->
     <div class="header">
       <div class="badge">🎬 ESPOCH · 2025</div>
-      <h1>Cine Foro<br/><em>Sostenibilidad</em></h1>
+      <h1>Cine Foro<br /><em>Sostenibilidad</em></h1>
       <div class="film-strip" aria-hidden="true">
         <span></span><span></span><span></span><span></span><span></span><span></span>
       </div>
@@ -333,22 +499,22 @@
           <!-- Nombres -->
           <div class="form-group">
             <label for="nombres">Nombres completos</label>
-            <input type="text" id="nombres" name="nombres"
-                   placeholder="Ej. María García López" required autocomplete="name"/>
+            <input type="text" id="nombres" name="nombres" placeholder="Ej. María García López" required
+              autocomplete="name" />
           </div>
 
           <!-- Correo -->
           <div class="form-group">
             <label for="correo">Correo electrónico</label>
-            <input type="email" id="correo" name="correo"
-                   placeholder="usuario@ejemplo.com" required autocomplete="email"/>
+            <input type="email" id="correo" name="correo" placeholder="usuario@ejemplo.com" required
+              autocomplete="email" />
           </div>
 
           <!-- Ciudad -->
           <div class="form-group">
             <label for="ciudad">Ciudad</label>
-            <input type="text" id="ciudad" name="ciudad"
-                   placeholder="Ej. Riobamba" required autocomplete="address-level2"/>
+            <input type="text" id="ciudad" name="ciudad" placeholder="Ej. Riobamba" required
+              autocomplete="address-level2" />
           </div>
 
           <!-- Tipo de asistente -->
@@ -372,10 +538,12 @@
                 <select id="facultad" name="facultad">
                   <option value="" disabled selected>Selecciona tu facultad o sede…</option>
                   <optgroup label="Sede Matriz - Riobamba">
-                    <option value="Facultad de Administración de Empresas (FADE)">Facultad de Administración de Empresas (FADE)</option>
+                    <option value="Facultad de Administración de Empresas (FADE)">Facultad de Administración de Empresas
+                      (FADE)</option>
                     <option value="Facultad de Ciencias">Facultad de Ciencias</option>
                     <option value="Facultad de Ciencias Pecuarias">Facultad de Ciencias Pecuarias</option>
-                    <option value="Facultad de Informática y Electrónica (FIE)">Facultad de Informática y Electrónica (FIE)</option>
+                    <option value="Facultad de Informática y Electrónica (FIE)">Facultad de Informática y Electrónica
+                      (FIE)</option>
                     <option value="Facultad de Mecánica">Facultad de Mecánica</option>
                     <option value="Facultad de Recursos Naturales">Facultad de Recursos Naturales</option>
                     <option value="Facultad de Salud Pública">Facultad de Salud Pública</option>
@@ -396,7 +564,7 @@
             </div>
           </div>
 
-          <hr class="divider"/>
+          <hr class="divider" />
 
           <button type="submit" id="btnSubmit">Registrar Ingreso →</button>
         </form>
@@ -411,4 +579,5 @@
   <script type="module" src="app.js?v=2"></script>
 
 </body>
+
 </html>
